@@ -27,6 +27,12 @@ public static class IdentityServiceCollectionExtensions
                 policy.RequireClaim(ScopeSealClaimTypes.TenantId);
                 policy.AddRequirements(new TenantRoleRequirement(TenantRole.Admin));
             })
+            .AddPolicy(ScopeSealPolicies.TenantEditor, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim(ScopeSealClaimTypes.TenantId);
+                policy.AddRequirements(new TenantRoleRequirement(TenantRole.Editor));
+            })
             .AddPolicy(ScopeSealPolicies.TenantOwner, policy =>
             {
                 policy.RequireAuthenticatedUser();

@@ -108,10 +108,13 @@ public sealed class EntitlementService(ApplicationDbContext dbContext) : IEntitl
         long increment = 1,
         CancellationToken cancellationToken = default)
     {
-        var check = await CheckUsageAsync(tenantId, metric, increment, cancellationToken);
-        if (!check.IsAllowed)
+        if (increment > 0)
         {
-            throw new InvalidOperationException(check.DenialReason);
+            var check = await CheckUsageAsync(tenantId, metric, increment, cancellationToken);
+            if (!check.IsAllowed)
+            {
+                throw new InvalidOperationException(check.DenialReason);
+            }
         }
 
         var periodKey = GetPeriodKey(metric);
@@ -122,6 +125,11 @@ public sealed class EntitlementService(ApplicationDbContext dbContext) : IEntitl
 
         if (counter is null)
         {
+            if (increment < 0)
+            {
+                return;
+            }
+
             counter = new UsageCounter
             {
                 Id = Guid.NewGuid(),
@@ -134,7 +142,7 @@ public sealed class EntitlementService(ApplicationDbContext dbContext) : IEntitl
         }
         else
         {
-            counter.Count += increment;
+            counter.Count = Math.Max(0, counter.Count + increment);
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

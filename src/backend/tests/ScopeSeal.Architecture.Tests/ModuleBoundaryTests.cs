@@ -4,7 +4,7 @@ using ScopeSeal.Administration;
 using Xunit;
 using ScopeSeal.AgreementSnapshots;
 using ScopeSeal.Approvals;
-using ScopeSeal.Audit;
+using ScopeSeal.Audit.DependencyInjection;
 using ScopeSeal.Billing;
 using ScopeSeal.ChangeLedger;
 using ScopeSeal.Documents;
@@ -15,7 +15,7 @@ using ScopeSeal.Notifications;
 using ScopeSeal.Privacy;
 using ScopeSeal.Shared.Abstractions;
 using ScopeSeal.Tenancy;
-using ScopeSeal.Workspaces;
+using ScopeSeal.Workspaces.DependencyInjection;
 
 namespace ScopeSeal.Architecture.Tests;
 

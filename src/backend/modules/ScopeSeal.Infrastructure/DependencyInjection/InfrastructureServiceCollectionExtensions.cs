@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using ScopeSeal.Audit.Services;
 using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Identity.Services;
@@ -12,6 +13,7 @@ using ScopeSeal.Infrastructure.Persistence;
 using ScopeSeal.Infrastructure.Services;
 using ScopeSeal.Shared.Configuration;
 using ScopeSeal.Tenancy.Services;
+using ScopeSeal.Workspaces.Services;
 
 namespace ScopeSeal.Infrastructure.DependencyInjection;
 
@@ -78,7 +80,14 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IUserAuthenticationService, AuthenticationService>();
         services.AddScoped<ITenantService, TenantService>();
         services.AddScoped<IEntitlementService, EntitlementService>();
+        services.AddScoped<IAuditService, AuditService>();
+        services.AddScoped<IWorkspaceService, WorkspaceService>();
+        services.AddScoped<IContactService, ContactService>();
+        services.AddScoped<IPartyService, PartyService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IWorkspaceTemplateService, WorkspaceTemplateService>();
         services.AddScoped<PlanCatalogSeeder>();
+        services.AddScoped<WorkspaceTemplateSeeder>();
 
         return services;
     }
@@ -94,6 +103,9 @@ public static class InfrastructureServiceCollectionExtensions
 
             var seeder = scope.ServiceProvider.GetRequiredService<PlanCatalogSeeder>();
             await seeder.SeedAsync(cancellationToken);
+
+            var templateSeeder = scope.ServiceProvider.GetRequiredService<WorkspaceTemplateSeeder>();
+            await templateSeeder.SeedAsync(cancellationToken);
         }
         finally
         {

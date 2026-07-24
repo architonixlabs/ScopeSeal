@@ -1,13 +1,16 @@
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ScopeSeal.Api.Endpoints;
 using ScopeSeal.Api.Middleware;
+using ScopeSeal.Audit.DependencyInjection;
 using ScopeSeal.Entitlements.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Infrastructure.DependencyInjection;
 using ScopeSeal.Shared.DependencyInjection;
 using ScopeSeal.Tenancy;
+using ScopeSeal.Workspaces.DependencyInjection;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +30,8 @@ builder.Services.AddScopeSealShared(builder.Configuration);
 builder.Services.AddIdentityModule();
 builder.Services.AddTenancyModule();
 builder.Services.AddEntitlementsModule(builder.Configuration);
+builder.Services.AddWorkspacesModule();
+builder.Services.AddAuditModule();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -37,6 +42,10 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.AddScopeSealInfrastructure(connectionString, builder.Environment);
 
 builder.Services.AddProblemDetails();
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, _, _) =>
@@ -117,6 +126,11 @@ app.MapSystemEndpoints();
 app.MapAuthEndpoints();
 app.MapTenantEndpoints();
 app.MapEntitlementEndpoints();
+app.MapDashboardEndpoints();
+app.MapWorkspaceEndpoints();
+app.MapContactEndpoints();
+app.MapPartyEndpoints();
+app.MapWorkspaceTemplateEndpoints();
 
 app.Run();
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ScopeSeal.AgreementSnapshots.Domain;
 using ScopeSeal.Approvals.Domain;
 using ScopeSeal.Audit.Domain;
+using ScopeSeal.ChangeLedger.Domain;
 using ScopeSeal.Documents.Domain;
 using ScopeSeal.Entitlements.Domain;
 using ScopeSeal.Identity.Domain;
@@ -84,6 +85,12 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<ChangeSuggestion> ChangeSuggestions => Set<ChangeSuggestion>();
 
     public DbSet<ApprovalRecord> ApprovalRecords => Set<ApprovalRecord>();
+
+    public DbSet<ChangeRequest> ChangeRequests => Set<ChangeRequest>();
+
+    public DbSet<ChangeImpact> ChangeImpacts => Set<ChangeImpact>();
+
+    public DbSet<ChangeDecision> ChangeDecisions => Set<ChangeDecision>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -322,6 +329,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
 
         ConfigureSnapshotEntity(builder);
         ConfigureApprovalEntities(builder);
+        ConfigureChangeLedgerEntities(builder);
 
         builder.Entity<ScopeItem>(entity =>
         {
@@ -470,6 +478,54 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.Property(s => s.CanonicalHashSha256).HasMaxLength(64);
             entity.HasIndex(s => s.PublicId).IsUnique();
             entity.HasIndex(s => new { s.TenantId, s.WorkspaceId, s.Status });
+            entity.HasIndex(s => s.SourceSnapshotId);
+            entity.HasIndex(s => s.ChangeRequestId);
+        });
+    }
+
+    private static void ConfigureChangeLedgerEntities(ModelBuilder builder)
+    {
+        builder.Entity<ChangeRequest>(entity =>
+        {
+            entity.ToTable("change_requests");
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Title).HasMaxLength(200).IsRequired();
+            entity.Property(r => r.Reason).HasMaxLength(4000).IsRequired();
+            entity.Property(r => r.Status).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(r => r.PublicId).IsUnique();
+            entity.HasIndex(r => new { r.TenantId, r.WorkspaceId, r.Status });
+            entity.HasIndex(r => r.SourceSnapshotId);
+            entity.HasIndex(r => r.ResultSnapshotId);
+        });
+
+        builder.Entity<ChangeImpact>(entity =>
+        {
+            entity.ToTable("change_impacts");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.ImpactType).HasConversion<string>().HasMaxLength(32);
+            entity.Property(i => i.Description).HasMaxLength(2000).IsRequired();
+            entity.Property(i => i.CurrencyCode).HasMaxLength(3);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.ChangeRequestId });
+            entity.HasOne(i => i.ChangeRequest)
+                .WithMany(r => r.Impacts)
+                .HasForeignKey(i => i.ChangeRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ChangeDecision>(entity =>
+        {
+            entity.ToTable("change_decisions");
+            entity.HasKey(d => d.Id);
+            entity.Property(d => d.DecisionNote).HasMaxLength(2000);
+            entity.Property(d => d.PreviousStatus).HasConversion<string>().HasMaxLength(32);
+            entity.Property(d => d.NewStatus).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(d => d.PublicId).IsUnique();
+            entity.HasIndex(d => new { d.TenantId, d.ChangeRequestId });
+            entity.HasOne(d => d.ChangeRequest)
+                .WithMany(r => r.Decisions)
+                .HasForeignKey(d => d.ChangeRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 

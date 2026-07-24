@@ -563,6 +563,30 @@ public sealed class ReviewApprovalService(
         snapshot.ApprovedAtUtc = now;
         snapshot.UpdatedAtUtc = now;
 
+        if (snapshot.SourceSnapshotId is not null)
+        {
+            var sourceSnapshot = await dbContext.AgreementSnapshots
+                .SingleOrDefaultAsync(
+                    s => s.TenantId == invitation.TenantId && s.Id == snapshot.SourceSnapshotId,
+                    cancellationToken);
+
+            if (sourceSnapshot is not null && sourceSnapshot.Status == SnapshotStatus.Approved)
+            {
+                sourceSnapshot.Status = SnapshotStatus.Superseded;
+                sourceSnapshot.UpdatedAtUtc = now;
+            }
+        }
+
+        if (snapshot.ChangeRequestId is not null)
+        {
+            await ChangeLedgerService.MarkChangeRequestImplementedAsync(
+                dbContext,
+                auditService,
+                invitation.TenantId,
+                snapshot.ChangeRequestId.Value,
+                cancellationToken);
+        }
+
         dbContext.ApprovalRecords.Add(approval);
         await dbContext.SaveChangesAsync(cancellationToken);
 

@@ -28,6 +28,10 @@ public sealed class AgreementSnapshot
 
     public DateTime? ApprovedAtUtc { get; set; }
 
+    public Guid? SourceSnapshotId { get; set; }
+
+    public Guid? ChangeRequestId { get; set; }
+
     public ICollection<ScopeItem> ScopeItems { get; set; } = [];
 
     public ICollection<Exclusion> Exclusions { get; set; } = [];

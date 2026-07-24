@@ -20,5 +20,9 @@ public enum AuditEventType
     ReviewInvitationSent = 15,
     ReviewInvitationRevoked = 16,
     ReviewCommentAdded = 17,
-    ChangeSuggestionAdded = 18
+    ChangeSuggestionAdded = 18,
+    ChangeRequestCreated = 19,
+    ChangeRequestStatusChanged = 20,
+    ChangeRequestAccepted = 21,
+    ChangeRequestImplemented = 22
 }

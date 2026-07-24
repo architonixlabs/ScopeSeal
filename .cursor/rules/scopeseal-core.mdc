@@ -1,0 +1,20 @@
+---
+description: Core ScopeSeal engineering standards — modular monolith, security, tenant isolation
+alwaysApply: true
+---
+
+# ScopeSeal Core Standards
+
+- Build a **modular monolith** — no microservices for MVP
+- Enforce **tenant isolation** on every query and endpoint
+- Use **entitlement service** for plan checks — never `if (plan == "pro")`
+- **Server-side authorization** — UI guards are not sufficient
+- Store timestamps in **UTC**; display with Asia/Kolkata default
+- Currency in **minor units + ISO code**
+- Approved snapshots are **immutable** — changes via Change Ledger only
+- Never trust Razorpay browser callbacks without webhook verification
+- Default AI mode: **ManualOnly**
+- No secrets in source control; use configuration/Key Vault
+- Safe marketing language — no "court-proof" or "legally guaranteed"
+
+Read `AGENTS.md` and `docs/backlog/implementation-ledger.md` before implementing features.

@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>ScopeSeal.Api</RootNamespace>
+    <AssemblyName>ScopeSeal.Api</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.3.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\modules\ScopeSeal.Shared\ScopeSeal.Shared.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Identity\ScopeSeal.Identity.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Tenancy\ScopeSeal.Tenancy.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Workspaces\ScopeSeal.Workspaces.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Documents\ScopeSeal.Documents.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.AgreementSnapshots\ScopeSeal.AgreementSnapshots.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Approvals\ScopeSeal.Approvals.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.ChangeLedger\ScopeSeal.ChangeLedger.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Billing\ScopeSeal.Billing.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Entitlements\ScopeSeal.Entitlements.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Privacy\ScopeSeal.Privacy.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Administration\ScopeSeal.Administration.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Audit\ScopeSeal.Audit.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Notifications\ScopeSeal.Notifications.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Extraction\ScopeSeal.Extraction.csproj" />
+  </ItemGroup>
+
+</Project>

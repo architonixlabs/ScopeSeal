@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\modules\ScopeSeal.Shared\ScopeSeal.Shared.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Identity\ScopeSeal.Identity.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Tenancy\ScopeSeal.Tenancy.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Workspaces\ScopeSeal.Workspaces.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Documents\ScopeSeal.Documents.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.AgreementSnapshots\ScopeSeal.AgreementSnapshots.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Approvals\ScopeSeal.Approvals.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.ChangeLedger\ScopeSeal.ChangeLedger.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Billing\ScopeSeal.Billing.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Entitlements\ScopeSeal.Entitlements.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Privacy\ScopeSeal.Privacy.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Administration\ScopeSeal.Administration.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Audit\ScopeSeal.Audit.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Notifications\ScopeSeal.Notifications.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Extraction\ScopeSeal.Extraction.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

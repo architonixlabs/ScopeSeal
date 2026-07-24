@@ -5,6 +5,7 @@ public static class ScopeSealPolicies
     public const string Authenticated = "Authenticated";
     public const string TenantMember = "TenantMember";
     public const string TenantAdmin = "TenantAdmin";
+    public const string TenantEditor = "TenantEditor";
     public const string TenantOwner = "TenantOwner";
 }
 

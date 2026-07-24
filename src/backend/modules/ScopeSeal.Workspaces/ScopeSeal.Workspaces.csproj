@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ScopeSeal.Shared\ScopeSeal.Shared.csproj" />
+    <ProjectReference Include="..\ScopeSeal.Tenancy\ScopeSeal.Tenancy.csproj" />
   </ItemGroup>
 
 </Project>

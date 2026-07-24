@@ -22,7 +22,7 @@
 | 1 | Architecture foundation | **Complete** | Solution, modules, API skeleton, Angular workspace, Docker, CI |
 | 2 | Identity and tenancy | **Complete** | EF Core, Identity, tenants, cookie auth, isolation tests |
 | 3 | Plans and entitlements | **Complete** | IEntitlementService, plan catalog, usage counters, Free defaults |
-| 4 | Workspace and contact management | Placeholder | |
+| 4 | Workspace and contact management | **Complete** | Workspaces, parties, contacts, templates, dashboard API, audit events |
 | 5 | Secure document upload | Placeholder | |
 | 6 | Manual Agreement Snapshot | Placeholder | |
 | 7 | Review and approval | Placeholder | |
@@ -55,6 +55,8 @@
 | API host (health, OpenAPI, logging, config validation) | **Complete** — Loop 1 |
 | Identity & tenancy (EF, auth endpoints, policies) | **Complete** — Loop 2 |
 | Plans & entitlements (IEntitlementService, plan catalog) | **Complete** — Loop 3 |
+| Workspaces & contacts (CRUD, parties, templates, dashboard) | **Complete** — Loop 4 |
+| Audit events (IAuditService foundation) | **Complete** — Loop 4 |
 | Worker host | Partially implemented — heartbeat only |
 | Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
 | CI pipeline (backend, clients, security) | **Complete** — Loop 1 |
@@ -64,8 +66,8 @@
 
 ## Last Updated
 
-2026-07-25 — Loop 3 completion
+2026-07-25 — Loop 4 completion
 
 ## Recommended Next Loop
 
-**Loop 4: Workspace and contact management** — workspace CRUD with entitlement-gated creation enforced via `IEntitlementService`.
+**Loop 5: Secure document upload** — quarantine storage, upload sessions, malware scan abstraction with tenant isolation.

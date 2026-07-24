@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ScopeSeal.Audit.Domain;
 using ScopeSeal.Entitlements.Domain;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Tenancy.Domain;
+using ScopeSeal.Workspaces.Domain;
 
 namespace ScopeSeal.Infrastructure.Persistence;
 
@@ -23,6 +25,18 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<TenantPlanAssignment> TenantPlanAssignments => Set<TenantPlanAssignment>();
 
     public DbSet<UsageCounter> UsageCounters => Set<UsageCounter>();
+
+    public DbSet<Workspace> Workspaces => Set<Workspace>();
+
+    public DbSet<Contact> Contacts => Set<Contact>();
+
+    public DbSet<Party> Parties => Set<Party>();
+
+    public DbSet<WorkspaceParty> WorkspaceParties => Set<WorkspaceParty>();
+
+    public DbSet<WorkspaceTemplate> WorkspaceTemplates => Set<WorkspaceTemplate>();
+
+    public DbSet<AuditEvent> AuditEvents => Set<AuditEvent>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -81,6 +95,85 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.Property(c => c.Metric).HasConversion<string>().HasMaxLength(64);
             entity.Property(c => c.PeriodKey).HasMaxLength(16);
             entity.HasIndex(c => new { c.TenantId, c.Metric, c.PeriodKey }).IsUnique();
+        });
+
+        builder.Entity<Workspace>(entity =>
+        {
+            entity.ToTable("workspaces");
+            entity.HasKey(w => w.Id);
+            entity.Property(w => w.Name).HasMaxLength(200).IsRequired();
+            entity.Property(w => w.Description).HasMaxLength(2000);
+            entity.Property(w => w.Type).HasConversion<string>().HasMaxLength(32);
+            entity.Property(w => w.Status).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(w => w.PublicId).IsUnique();
+            entity.HasIndex(w => new { w.TenantId, w.Status });
+            entity.HasOne(w => w.Template)
+                .WithMany()
+                .HasForeignKey(w => w.TemplateId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<Contact>(entity =>
+        {
+            entity.ToTable("contacts");
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.DisplayName).HasMaxLength(200).IsRequired();
+            entity.Property(c => c.Email).HasMaxLength(320);
+            entity.Property(c => c.Phone).HasMaxLength(32);
+            entity.Property(c => c.Organization).HasMaxLength(200);
+            entity.HasIndex(c => c.PublicId).IsUnique();
+            entity.HasIndex(c => c.TenantId);
+        });
+
+        builder.Entity<Party>(entity =>
+        {
+            entity.ToTable("parties");
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.DisplayName).HasMaxLength(200).IsRequired();
+            entity.Property(p => p.RoleLabel).HasMaxLength(100);
+            entity.HasIndex(p => p.PublicId).IsUnique();
+            entity.HasIndex(p => p.TenantId);
+            entity.HasOne(p => p.Contact)
+                .WithMany(c => c.Parties)
+                .HasForeignKey(p => p.ContactId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<WorkspaceParty>(entity =>
+        {
+            entity.ToTable("workspace_parties");
+            entity.HasKey(wp => wp.Id);
+            entity.Property(wp => wp.Role).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(wp => new { wp.WorkspaceId, wp.PartyId }).IsUnique();
+            entity.HasOne(wp => wp.Workspace)
+                .WithMany(w => w.Parties)
+                .HasForeignKey(wp => wp.WorkspaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(wp => wp.Party)
+                .WithMany(p => p.WorkspaceParties)
+                .HasForeignKey(wp => wp.PartyId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<WorkspaceTemplate>(entity =>
+        {
+            entity.ToTable("workspace_templates");
+            entity.HasKey(t => t.Id);
+            entity.Property(t => t.Name).HasMaxLength(200).IsRequired();
+            entity.Property(t => t.Description).HasMaxLength(1000);
+            entity.Property(t => t.WorkspaceType).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(t => t.PublicId).IsUnique();
+            entity.HasIndex(t => new { t.TenantId, t.IsSystem });
+        });
+
+        builder.Entity<AuditEvent>(entity =>
+        {
+            entity.ToTable("audit_events");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.EventType).HasConversion<string>().HasMaxLength(64);
+            entity.Property(e => e.EntityType).HasMaxLength(64).IsRequired();
+            entity.Property(e => e.Summary).HasMaxLength(500);
+            entity.HasIndex(e => new { e.TenantId, e.OccurredAtUtc });
         });
 
         builder.Entity<IdentityRole<Guid>>().ToTable("roles");

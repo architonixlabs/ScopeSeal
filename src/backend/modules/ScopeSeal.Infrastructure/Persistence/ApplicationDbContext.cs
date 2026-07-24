@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ScopeSeal.AgreementSnapshots.Domain;
 using ScopeSeal.Audit.Domain;
 using ScopeSeal.Documents.Domain;
 using ScopeSeal.Entitlements.Domain;
@@ -54,6 +55,26 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<ProcessingJob> ProcessingJobs => Set<ProcessingJob>();
 
     public DbSet<DocumentDownloadToken> DocumentDownloadTokens => Set<DocumentDownloadToken>();
+
+    public DbSet<AgreementSnapshot> AgreementSnapshots => Set<AgreementSnapshot>();
+
+    public DbSet<ScopeItem> ScopeItems => Set<ScopeItem>();
+
+    public DbSet<Exclusion> Exclusions => Set<Exclusion>();
+
+    public DbSet<Deliverable> Deliverables => Set<Deliverable>();
+
+    public DbSet<Commitment> Commitments => Set<Commitment>();
+
+    public DbSet<PaymentMilestone> PaymentMilestones => Set<PaymentMilestone>();
+
+    public DbSet<TimelineMilestone> TimelineMilestones => Set<TimelineMilestone>();
+
+    public DbSet<SnapshotDependency> SnapshotDependencies => Set<SnapshotDependency>();
+
+    public DbSet<Assumption> Assumptions => Set<Assumption>();
+
+    public DbSet<OpenQuestion> OpenQuestions => Set<OpenQuestion>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -290,11 +311,154 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.HasIndex(t => new { t.TenantId, t.ExpiresAtUtc });
         });
 
+        ConfigureSnapshotEntity(builder);
+
+        builder.Entity<ScopeItem>(entity =>
+        {
+            entity.ToTable("scope_items");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Title).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId });
+            entity.HasOne(i => i.AgreementSnapshot)
+                .WithMany(s => s.ScopeItems)
+                .HasForeignKey(i => i.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Exclusion>(entity =>
+        {
+            entity.ToTable("exclusions");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Title).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId });
+            entity.HasOne(i => i.AgreementSnapshot)
+                .WithMany(s => s.Exclusions)
+                .HasForeignKey(i => i.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Deliverable>(entity =>
+        {
+            entity.ToTable("deliverables");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Title).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId });
+            entity.HasOne(i => i.AgreementSnapshot)
+                .WithMany(s => s.Deliverables)
+                .HasForeignKey(i => i.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Commitment>(entity =>
+        {
+            entity.ToTable("commitments");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Title).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId });
+            entity.HasOne(i => i.AgreementSnapshot)
+                .WithMany(s => s.Commitments)
+                .HasForeignKey(i => i.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<SnapshotDependency>(entity =>
+        {
+            entity.ToTable("snapshot_dependencies");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Title).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId });
+            entity.HasOne(i => i.AgreementSnapshot)
+                .WithMany(s => s.Dependencies)
+                .HasForeignKey(i => i.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Assumption>(entity =>
+        {
+            entity.ToTable("assumptions");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Title).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId });
+            entity.HasOne(i => i.AgreementSnapshot)
+                .WithMany(s => s.Assumptions)
+                .HasForeignKey(i => i.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<OpenQuestion>(entity =>
+        {
+            entity.ToTable("open_questions");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Title).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId });
+            entity.HasOne(i => i.AgreementSnapshot)
+                .WithMany(s => s.OpenQuestions)
+                .HasForeignKey(i => i.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<PaymentMilestone>(entity =>
+        {
+            entity.ToTable("payment_milestones");
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Title).HasMaxLength(200).IsRequired();
+            entity.Property(m => m.Description).HasMaxLength(2000);
+            entity.Property(m => m.CurrencyCode).HasMaxLength(3);
+            entity.HasIndex(m => m.PublicId).IsUnique();
+            entity.HasIndex(m => new { m.TenantId, m.AgreementSnapshotId });
+            entity.HasOne(m => m.AgreementSnapshot)
+                .WithMany(s => s.PaymentMilestones)
+                .HasForeignKey(m => m.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<TimelineMilestone>(entity =>
+        {
+            entity.ToTable("timeline_milestones");
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Title).HasMaxLength(200).IsRequired();
+            entity.Property(m => m.Description).HasMaxLength(2000);
+            entity.HasIndex(m => m.PublicId).IsUnique();
+            entity.HasIndex(m => new { m.TenantId, m.AgreementSnapshotId });
+            entity.HasOne(m => m.AgreementSnapshot)
+                .WithMany(s => s.TimelineMilestones)
+                .HasForeignKey(m => m.AgreementSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         builder.Entity<IdentityRole<Guid>>().ToTable("roles");
         builder.Entity<IdentityUserRole<Guid>>().ToTable("user_roles");
         builder.Entity<IdentityUserClaim<Guid>>().ToTable("user_claims");
         builder.Entity<IdentityUserLogin<Guid>>().ToTable("user_logins");
         builder.Entity<IdentityUserToken<Guid>>().ToTable("user_tokens");
         builder.Entity<IdentityRoleClaim<Guid>>().ToTable("role_claims");
+    }
+
+    private static void ConfigureSnapshotEntity(ModelBuilder builder)
+    {
+        builder.Entity<AgreementSnapshot>(entity =>
+        {
+            entity.ToTable("agreement_snapshots");
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Title).HasMaxLength(200).IsRequired();
+            entity.Property(s => s.Description).HasMaxLength(2000);
+            entity.Property(s => s.Status).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(s => s.PublicId).IsUnique();
+            entity.HasIndex(s => new { s.TenantId, s.WorkspaceId, s.Status });
+        });
     }
 }

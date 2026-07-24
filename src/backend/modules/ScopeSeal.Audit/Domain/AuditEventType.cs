@@ -10,5 +10,7 @@ public enum AuditEventType
     WorkspacePartyAdded = 5,
     UploadSessionCreated = 6,
     DocumentUploaded = 7,
-    UploadRejected = 8
+    UploadRejected = 8,
+    SnapshotCreated = 9,
+    SnapshotUpdated = 10
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Identity.Services;
 using ScopeSeal.Infrastructure.Persistence;
@@ -16,6 +17,8 @@ namespace ScopeSeal.Infrastructure.DependencyInjection;
 
 public static class InfrastructureServiceCollectionExtensions
 {
+    private static readonly SemaphoreSlim MigrationLock = new(1, 1);
+
     public static IServiceCollection AddScopeSealInfrastructure(
         this IServiceCollection services,
         string connectionString,
@@ -74,14 +77,27 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IUserAuthenticationService, AuthenticationService>();
         services.AddScoped<ITenantService, TenantService>();
+        services.AddScoped<IEntitlementService, EntitlementService>();
+        services.AddScoped<PlanCatalogSeeder>();
 
         return services;
     }
 
     public static async Task ApplyMigrationsAsync(this IServiceProvider services, CancellationToken cancellationToken = default)
     {
-        await using var scope = services.CreateAsyncScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await db.Database.MigrateAsync(cancellationToken);
+        await MigrationLock.WaitAsync(cancellationToken);
+        try
+        {
+            await using var scope = services.CreateAsyncScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await db.Database.MigrateAsync(cancellationToken);
+
+            var seeder = scope.ServiceProvider.GetRequiredService<PlanCatalogSeeder>();
+            await seeder.SeedAsync(cancellationToken);
+        }
+        finally
+        {
+            MigrationLock.Release();
+        }
     }
 }

@@ -2,7 +2,12 @@ using ScopeSeal.Tenancy.Domain;
 
 namespace ScopeSeal.Tenancy.Services;
 
-public sealed record TenantSummary(Guid PublicId, string Name, TenantRole Role, DateTime CreatedAtUtc);
+public sealed record TenantSummary(
+    Guid TenantId,
+    Guid PublicId,
+    string Name,
+    TenantRole Role,
+    DateTime CreatedAtUtc);
 
 public interface ITenantService
 {

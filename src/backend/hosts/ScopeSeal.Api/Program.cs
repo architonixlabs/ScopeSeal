@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ScopeSeal.Api.Endpoints;
 using ScopeSeal.Api.Middleware;
+using ScopeSeal.Entitlements.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Infrastructure.DependencyInjection;
 using ScopeSeal.Shared.DependencyInjection;
@@ -25,6 +26,7 @@ builder.Host.UseSerilog((context, services, configuration) =>
 builder.Services.AddScopeSealShared(builder.Configuration);
 builder.Services.AddIdentityModule();
 builder.Services.AddTenancyModule();
+builder.Services.AddEntitlementsModule(builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -114,6 +116,7 @@ app.MapHealthChecks("/health");
 app.MapSystemEndpoints();
 app.MapAuthEndpoints();
 app.MapTenantEndpoints();
+app.MapEntitlementEndpoints();
 
 app.Run();
 

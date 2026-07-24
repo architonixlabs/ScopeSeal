@@ -20,6 +20,7 @@ public sealed class TenantService(ApplicationDbContext dbContext) : ITenantServi
         return membership is null
             ? null
             : new TenantSummary(
+                membership.TenantId,
                 membership.Tenant.PublicId,
                 membership.Tenant.Name,
                 membership.Role,
@@ -40,6 +41,7 @@ public sealed class TenantService(ApplicationDbContext dbContext) : ITenantServi
         return membership is null
             ? null
             : new TenantSummary(
+                membership.TenantId,
                 membership.Tenant.PublicId,
                 membership.Tenant.Name,
                 membership.Role,

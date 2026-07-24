@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Identity.Services;
 using ScopeSeal.Infrastructure.Persistence;
@@ -13,6 +14,7 @@ public sealed class RegistrationService(
     UserManager<ApplicationUser> userManager,
     ApplicationDbContext dbContext,
     IEmailVerificationService emailVerificationService,
+    IEntitlementService entitlementService,
     IOptions<ScopeSealOptions> options) : IRegistrationService
 {
     public async Task<IdentityResult> RegisterAsync(
@@ -55,6 +57,8 @@ public sealed class RegistrationService(
         dbContext.Tenants.Add(tenant);
         dbContext.TenantMembers.Add(membership);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        await entitlementService.AssignDefaultFreePlanAsync(tenant.Id, cancellationToken);
 
         if (options.Value.Auth.RequireEmailVerification)
         {

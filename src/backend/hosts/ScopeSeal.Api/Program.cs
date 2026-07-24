@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ScopeSeal.Api.Endpoints;
 using ScopeSeal.Api.Middleware;
 using ScopeSeal.Audit.DependencyInjection;
+using ScopeSeal.Documents.DependencyInjection;
 using ScopeSeal.Entitlements.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Infrastructure.DependencyInjection;
@@ -31,6 +32,7 @@ builder.Services.AddIdentityModule();
 builder.Services.AddTenancyModule();
 builder.Services.AddEntitlementsModule(builder.Configuration);
 builder.Services.AddWorkspacesModule();
+builder.Services.AddDocumentsModule();
 builder.Services.AddAuditModule();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
@@ -131,6 +133,8 @@ app.MapWorkspaceEndpoints();
 app.MapContactEndpoints();
 app.MapPartyEndpoints();
 app.MapWorkspaceTemplateEndpoints();
+app.MapUploadSessionEndpoints();
+app.MapDocumentEndpoints();
 
 app.Run();
 

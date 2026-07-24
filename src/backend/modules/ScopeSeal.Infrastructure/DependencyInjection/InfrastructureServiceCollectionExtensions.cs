@@ -6,11 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using ScopeSeal.Audit.Services;
+using ScopeSeal.Documents.Services;
 using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Identity.Services;
 using ScopeSeal.Infrastructure.Persistence;
+using ScopeSeal.Infrastructure.Security;
 using ScopeSeal.Infrastructure.Services;
+using ScopeSeal.Infrastructure.Storage;
 using ScopeSeal.Shared.Configuration;
 using ScopeSeal.Tenancy.Services;
 using ScopeSeal.Workspaces.Services;
@@ -86,6 +89,20 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IPartyService, PartyService>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IWorkspaceTemplateService, WorkspaceTemplateService>();
+        services.AddScoped<IUploadSessionService, UploadSessionService>();
+        services.AddScoped<IDocumentService, DocumentService>();
+        services.AddSingleton<IContentTypeValidator, ContentTypeValidator>();
+        services.AddSingleton<IMalwareScanner, DevelopmentMalwareScanner>();
+
+        if (environment?.EnvironmentName == "Testing")
+        {
+            services.AddSingleton<IBlobStorageService, InMemoryBlobStorageService>();
+        }
+        else
+        {
+            services.AddSingleton<IBlobStorageService, AzuriteBlobStorageService>();
+        }
+
         services.AddScoped<PlanCatalogSeeder>();
         services.AddScoped<WorkspaceTemplateSeeder>();
 

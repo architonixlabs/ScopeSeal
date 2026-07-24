@@ -25,6 +25,27 @@ public sealed class ScopeSealOptions
 
     [Required]
     public AiOptions Ai { get; init; } = new();
+
+    [Required]
+    public DocumentUploadOptions DocumentUpload { get; init; } = new();
+}
+
+public sealed class DocumentUploadOptions
+{
+    [Range(1024, long.MaxValue)]
+    public long MaxFileBytes { get; init; } = 25_000_000;
+
+    [Range(1, 168)]
+    public int SessionExpirationHours { get; init; } = 24;
+
+    [Range(1, 60)]
+    public int DownloadTokenExpirationMinutes { get; init; } = 5;
+
+    [Required]
+    public string QuarantineContainer { get; init; } = "quarantine";
+
+    [Required]
+    public string PermanentContainer { get; init; } = "documents";
 }
 
 public sealed class AuthOptions

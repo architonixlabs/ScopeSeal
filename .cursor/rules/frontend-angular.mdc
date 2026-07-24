@@ -1,0 +1,16 @@
+---
+description: Angular frontend conventions for ScopeSeal
+globs: "**/*.{ts,html,scss}"
+alwaysApply: false
+---
+
+# Frontend Conventions
+
+- Angular 22 standalone components, strict TypeScript
+- Angular Material; responsive PWA layouts
+- Signal-based state where appropriate; route-level lazy loading
+- Reflect server entitlement state — do not gate paid features in browser only
+- Accessible forms (ARIA, keyboard, contrast)
+- Distinguish draft, shared, and approved snapshot states visually
+- Show AI uncertainty clearly; never auto-approve AI suggestions in UI
+- i18n-ready strings (English first)

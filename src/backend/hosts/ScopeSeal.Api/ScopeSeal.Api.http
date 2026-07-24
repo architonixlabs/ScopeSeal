@@ -1,0 +1,6 @@
+@ScopeSeal.Api_HostAddress = http://localhost:5021
+
+GET {{ScopeSeal.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

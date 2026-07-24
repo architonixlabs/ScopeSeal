@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/hosts/">
+    <Project Path="hosts/ScopeSeal.Api/ScopeSeal.Api.csproj" />
+    <Project Path="hosts/ScopeSeal.Worker/ScopeSeal.Worker.csproj" />
+  </Folder>
+  <Folder Name="/modules/">
+    <Project Path="modules/ScopeSeal.Administration/ScopeSeal.Administration.csproj" />
+    <Project Path="modules/ScopeSeal.AgreementSnapshots/ScopeSeal.AgreementSnapshots.csproj" />
+    <Project Path="modules/ScopeSeal.Approvals/ScopeSeal.Approvals.csproj" />
+    <Project Path="modules/ScopeSeal.Audit/ScopeSeal.Audit.csproj" />
+    <Project Path="modules/ScopeSeal.Billing/ScopeSeal.Billing.csproj" />
+    <Project Path="modules/ScopeSeal.ChangeLedger/ScopeSeal.ChangeLedger.csproj" />
+    <Project Path="modules/ScopeSeal.Documents/ScopeSeal.Documents.csproj" />
+    <Project Path="modules/ScopeSeal.Entitlements/ScopeSeal.Entitlements.csproj" />
+    <Project Path="modules/ScopeSeal.Extraction/ScopeSeal.Extraction.csproj" />
+    <Project Path="modules/ScopeSeal.Identity/ScopeSeal.Identity.csproj" />
+    <Project Path="modules/ScopeSeal.Notifications/ScopeSeal.Notifications.csproj" />
+    <Project Path="modules/ScopeSeal.Privacy/ScopeSeal.Privacy.csproj" />
+    <Project Path="modules/ScopeSeal.Shared/ScopeSeal.Shared.csproj" />
+    <Project Path="modules/ScopeSeal.Tenancy/ScopeSeal.Tenancy.csproj" />
+    <Project Path="modules/ScopeSeal.Workspaces/ScopeSeal.Workspaces.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ScopeSeal.Api.Tests/ScopeSeal.Api.Tests.csproj" />
+    <Project Path="tests/ScopeSeal.Architecture.Tests/ScopeSeal.Architecture.Tests.csproj" />
+  </Folder>
+</Solution>

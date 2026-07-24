@@ -1,0 +1,16 @@
+---
+description: .NET backend conventions for ScopeSeal API
+globs: "**/*.cs"
+alwaysApply: false
+---
+
+# Backend Conventions
+
+- ASP.NET Core Web API with Problem Details errors
+- Application use cases in module folders; infrastructure behind interfaces
+- FluentValidation for request validation
+- EF Core with explicit migrations; foreign keys and check constraints
+- Non-guessable external IDs in API contracts
+- Idempotency keys for sensitive creates; processed-event table for webhooks
+- Structured logging with correlation IDs — no document content or secrets in logs
+- Integration tests with Testcontainers PostgreSQL for tenant isolation

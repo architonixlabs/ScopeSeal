@@ -23,7 +23,7 @@
 | 2 | Identity and tenancy | **Complete** | EF Core, Identity, tenants, cookie auth, isolation tests |
 | 3 | Plans and entitlements | **Complete** | IEntitlementService, plan catalog, usage counters, Free defaults |
 | 4 | Workspace and contact management | **Complete** | Workspaces, parties, contacts, templates, dashboard API, audit events |
-| 5 | Secure document upload | Placeholder | |
+| 5 | Secure document upload | **Complete** | Upload sessions, quarantine/permanent blob storage, content validation, malware scan abstraction, signed downloads |
 | 6 | Manual Agreement Snapshot | Placeholder | |
 | 7 | Review and approval | Placeholder | |
 | 8 | Change Ledger | Placeholder | |
@@ -56,7 +56,8 @@
 | Identity & tenancy (EF, auth endpoints, policies) | **Complete** — Loop 2 |
 | Plans & entitlements (IEntitlementService, plan catalog) | **Complete** — Loop 3 |
 | Workspaces & contacts (CRUD, parties, templates, dashboard) | **Complete** — Loop 4 |
-| Audit events (IAuditService foundation) | **Complete** — Loop 4 |
+| Secure document upload (sessions, blob storage, validation, scan) | **Complete** — Loop 5 |
+| Audit events (IAuditService foundation) | **Complete** — Loop 4–5 |
 | Worker host | Partially implemented — heartbeat only |
 | Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
 | CI pipeline (backend, clients, security) | **Complete** — Loop 1 |
@@ -66,8 +67,8 @@
 
 ## Last Updated
 
-2026-07-25 — Loop 4 completion
+2026-07-25 — Loop 5 completion
 
 ## Recommended Next Loop
 
-**Loop 5: Secure document upload** — quarantine storage, upload sessions, malware scan abstraction with tenant isolation.
+**Loop 6: Manual Agreement Snapshot** — draft snapshot creation from workspace context and uploaded documents.

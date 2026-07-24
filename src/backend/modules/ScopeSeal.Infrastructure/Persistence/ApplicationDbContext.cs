@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ScopeSeal.Audit.Domain;
+using ScopeSeal.Documents.Domain;
 using ScopeSeal.Entitlements.Domain;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Tenancy.Domain;
@@ -37,6 +38,22 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<WorkspaceTemplate> WorkspaceTemplates => Set<WorkspaceTemplate>();
 
     public DbSet<AuditEvent> AuditEvents => Set<AuditEvent>();
+
+    public DbSet<UploadSession> UploadSessions => Set<UploadSession>();
+
+    public DbSet<Document> Documents => Set<Document>();
+
+    public DbSet<DocumentVersion> DocumentVersions => Set<DocumentVersion>();
+
+    public DbSet<DocumentBlob> DocumentBlobs => Set<DocumentBlob>();
+
+    public DbSet<DocumentHash> DocumentHashes => Set<DocumentHash>();
+
+    public DbSet<MalwareScanResult> MalwareScanResults => Set<MalwareScanResult>();
+
+    public DbSet<ProcessingJob> ProcessingJobs => Set<ProcessingJob>();
+
+    public DbSet<DocumentDownloadToken> DocumentDownloadTokens => Set<DocumentDownloadToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -174,6 +191,103 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.Property(e => e.EntityType).HasMaxLength(64).IsRequired();
             entity.Property(e => e.Summary).HasMaxLength(500);
             entity.HasIndex(e => new { e.TenantId, e.OccurredAtUtc });
+        });
+
+        builder.Entity<UploadSession>(entity =>
+        {
+            entity.ToTable("upload_sessions");
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.OriginalFileName).HasMaxLength(255).IsRequired();
+            entity.Property(s => s.DeclaredContentType).HasMaxLength(128).IsRequired();
+            entity.Property(s => s.ServerFileName).HasMaxLength(128).IsRequired();
+            entity.Property(s => s.QuarantineBlobPath).HasMaxLength(512).IsRequired();
+            entity.Property(s => s.Status).HasConversion<string>().HasMaxLength(32);
+            entity.Property(s => s.RejectionReason).HasMaxLength(500);
+            entity.HasIndex(s => s.PublicId).IsUnique();
+            entity.HasIndex(s => new { s.TenantId, s.WorkspaceId, s.Status });
+        });
+
+        builder.Entity<Document>(entity =>
+        {
+            entity.ToTable("documents");
+            entity.HasKey(d => d.Id);
+            entity.Property(d => d.OriginalFileName).HasMaxLength(255).IsRequired();
+            entity.Property(d => d.ContentType).HasMaxLength(128).IsRequired();
+            entity.Property(d => d.Status).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(d => d.PublicId).IsUnique();
+            entity.HasIndex(d => new { d.TenantId, d.WorkspaceId });
+        });
+
+        builder.Entity<DocumentVersion>(entity =>
+        {
+            entity.ToTable("document_versions");
+            entity.HasKey(v => v.Id);
+            entity.HasIndex(v => v.PublicId).IsUnique();
+            entity.HasIndex(v => new { v.DocumentId, v.VersionNumber }).IsUnique();
+            entity.HasOne(v => v.Document)
+                .WithMany(d => d.Versions)
+                .HasForeignKey(v => v.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DocumentBlob>(entity =>
+        {
+            entity.ToTable("document_blobs");
+            entity.HasKey(b => b.Id);
+            entity.Property(b => b.Container).HasMaxLength(64).IsRequired();
+            entity.Property(b => b.StoragePath).HasMaxLength(512).IsRequired();
+            entity.HasOne(b => b.DocumentVersion)
+                .WithOne(v => v.Blob)
+                .HasForeignKey<DocumentBlob>(b => b.DocumentVersionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DocumentHash>(entity =>
+        {
+            entity.ToTable("document_hashes");
+            entity.HasKey(h => h.Id);
+            entity.Property(h => h.Algorithm).HasMaxLength(32).IsRequired();
+            entity.Property(h => h.HashValue).HasMaxLength(128).IsRequired();
+            entity.HasOne(h => h.DocumentVersion)
+                .WithOne(v => v.Hash)
+                .HasForeignKey<DocumentHash>(h => h.DocumentVersionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<MalwareScanResult>(entity =>
+        {
+            entity.ToTable("malware_scan_results");
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Status).HasConversion<string>().HasMaxLength(32);
+            entity.Property(r => r.ScannerName).HasMaxLength(128);
+            entity.Property(r => r.Details).HasMaxLength(500);
+            entity.HasOne(r => r.DocumentVersion)
+                .WithOne(v => v.MalwareScan)
+                .HasForeignKey<MalwareScanResult>(r => r.DocumentVersionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ProcessingJob>(entity =>
+        {
+            entity.ToTable("processing_jobs");
+            entity.HasKey(j => j.Id);
+            entity.Property(j => j.JobType).HasConversion<string>().HasMaxLength(32);
+            entity.Property(j => j.Status).HasConversion<string>().HasMaxLength(32);
+            entity.Property(j => j.ErrorMessage).HasMaxLength(500);
+            entity.HasIndex(j => j.PublicId).IsUnique();
+            entity.HasIndex(j => new { j.TenantId, j.Status });
+            entity.HasOne(j => j.DocumentVersion)
+                .WithMany(v => v.ProcessingJobs)
+                .HasForeignKey(j => j.DocumentVersionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DocumentDownloadToken>(entity =>
+        {
+            entity.ToTable("document_download_tokens");
+            entity.HasKey(t => t.Id);
+            entity.HasIndex(t => t.Token).IsUnique();
+            entity.HasIndex(t => new { t.TenantId, t.ExpiresAtUtc });
         });
 
         builder.Entity<IdentityRole<Guid>>().ToTable("roles");

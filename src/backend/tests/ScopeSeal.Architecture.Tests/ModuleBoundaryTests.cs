@@ -7,7 +7,7 @@ using ScopeSeal.Approvals;
 using ScopeSeal.Audit.DependencyInjection;
 using ScopeSeal.Billing;
 using ScopeSeal.ChangeLedger;
-using ScopeSeal.Documents;
+using ScopeSeal.Documents.DependencyInjection;
 using ScopeSeal.Entitlements.DependencyInjection;
 using ScopeSeal.Extraction;
 using ScopeSeal.Identity.DependencyInjection;

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ScopeSeal.AgreementSnapshots.Domain;
+using ScopeSeal.Approvals.Domain;
 using ScopeSeal.Audit.Domain;
 using ScopeSeal.Documents.Domain;
 using ScopeSeal.Entitlements.Domain;
@@ -75,6 +76,14 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<Assumption> Assumptions => Set<Assumption>();
 
     public DbSet<OpenQuestion> OpenQuestions => Set<OpenQuestion>();
+
+    public DbSet<ReviewInvitation> ReviewInvitations => Set<ReviewInvitation>();
+
+    public DbSet<ReviewComment> ReviewComments => Set<ReviewComment>();
+
+    public DbSet<ChangeSuggestion> ChangeSuggestions => Set<ChangeSuggestion>();
+
+    public DbSet<ApprovalRecord> ApprovalRecords => Set<ApprovalRecord>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -312,6 +321,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
         });
 
         ConfigureSnapshotEntity(builder);
+        ConfigureApprovalEntities(builder);
 
         builder.Entity<ScopeItem>(entity =>
         {
@@ -457,8 +467,57 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.Property(s => s.Title).HasMaxLength(200).IsRequired();
             entity.Property(s => s.Description).HasMaxLength(2000);
             entity.Property(s => s.Status).HasConversion<string>().HasMaxLength(32);
+            entity.Property(s => s.CanonicalHashSha256).HasMaxLength(64);
             entity.HasIndex(s => s.PublicId).IsUnique();
             entity.HasIndex(s => new { s.TenantId, s.WorkspaceId, s.Status });
+        });
+    }
+
+    private static void ConfigureApprovalEntities(ModelBuilder builder)
+    {
+        builder.Entity<ReviewInvitation>(entity =>
+        {
+            entity.ToTable("review_invitations");
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.ReviewerEmail).HasMaxLength(320).IsRequired();
+            entity.Property(i => i.ReviewerName).HasMaxLength(200);
+            entity.Property(i => i.Status).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(i => i.PublicId).IsUnique();
+            entity.HasIndex(i => i.Token).IsUnique();
+            entity.HasIndex(i => new { i.TenantId, i.AgreementSnapshotId, i.Status });
+        });
+
+        builder.Entity<ReviewComment>(entity =>
+        {
+            entity.ToTable("review_comments");
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.AuthorName).HasMaxLength(200).IsRequired();
+            entity.Property(c => c.Content).HasMaxLength(4000).IsRequired();
+            entity.HasIndex(c => c.PublicId).IsUnique();
+            entity.HasIndex(c => new { c.TenantId, c.AgreementSnapshotId });
+        });
+
+        builder.Entity<ChangeSuggestion>(entity =>
+        {
+            entity.ToTable("change_suggestions");
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.AuthorName).HasMaxLength(200).IsRequired();
+            entity.Property(c => c.SectionReference).HasMaxLength(100).IsRequired();
+            entity.Property(c => c.SuggestedChange).HasMaxLength(4000).IsRequired();
+            entity.HasIndex(c => c.PublicId).IsUnique();
+            entity.HasIndex(c => new { c.TenantId, c.AgreementSnapshotId });
+        });
+
+        builder.Entity<ApprovalRecord>(entity =>
+        {
+            entity.ToTable("approval_records");
+            entity.HasKey(a => a.Id);
+            entity.Property(a => a.ApproverName).HasMaxLength(200).IsRequired();
+            entity.Property(a => a.ApproverEmail).HasMaxLength(320).IsRequired();
+            entity.Property(a => a.CanonicalHashSha256).HasMaxLength(64).IsRequired();
+            entity.Property(a => a.ConfirmationStatement).HasMaxLength(1000).IsRequired();
+            entity.HasIndex(a => a.PublicId).IsUnique();
+            entity.HasIndex(a => new { a.TenantId, a.AgreementSnapshotId }).IsUnique();
         });
     }
 }

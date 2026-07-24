@@ -24,6 +24,10 @@ public sealed class AgreementSnapshot
 
     public DateTime UpdatedAtUtc { get; set; }
 
+    public string? CanonicalHashSha256 { get; set; }
+
+    public DateTime? ApprovedAtUtc { get; set; }
+
     public ICollection<ScopeItem> ScopeItems { get; set; } = [];
 
     public ICollection<Exclusion> Exclusions { get; set; } = [];

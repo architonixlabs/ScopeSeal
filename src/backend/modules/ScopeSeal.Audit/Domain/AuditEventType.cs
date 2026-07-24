@@ -12,5 +12,13 @@ public enum AuditEventType
     DocumentUploaded = 7,
     UploadRejected = 8,
     SnapshotCreated = 9,
-    SnapshotUpdated = 10
+    SnapshotUpdated = 10,
+    SnapshotShared = 11,
+    SnapshotReadyForApproval = 12,
+    SnapshotChangesRequested = 13,
+    SnapshotApproved = 14,
+    ReviewInvitationSent = 15,
+    ReviewInvitationRevoked = 16,
+    ReviewCommentAdded = 17,
+    ChangeSuggestionAdded = 18
 }

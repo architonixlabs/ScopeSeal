@@ -133,6 +133,19 @@ public sealed class ReviewApprovalService(
             return (null, "A valid reviewer email is required.");
         }
 
+        try
+        {
+            await entitlementService.RecordUsageAsync(
+                tenantId,
+                UsageMetric.ExternalInvitationsSentThisMonth,
+                increment: 1,
+                cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return (null, ex.Message);
+        }
+
         var expirationDays = request.ExpirationDays is > 0 and <= 30
             ? request.ExpirationDays.Value
             : DefaultInvitationExpirationDays;
@@ -155,12 +168,6 @@ public sealed class ReviewApprovalService(
 
         dbContext.ReviewInvitations.Add(invitation);
         await dbContext.SaveChangesAsync(cancellationToken);
-
-        await entitlementService.RecordUsageAsync(
-            tenantId,
-            UsageMetric.ExternalInvitationsSentThisMonth,
-            increment: 1,
-            cancellationToken);
 
         await auditService.RecordAsync(
             tenantId,

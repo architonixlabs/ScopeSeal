@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using ScopeSeal.Entitlements.Domain;
 using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Infrastructure.Persistence;
@@ -108,45 +109,105 @@ public sealed class EntitlementService(ApplicationDbContext dbContext) : IEntitl
         long increment = 1,
         CancellationToken cancellationToken = default)
     {
+        if (increment == 0)
+        {
+            return;
+        }
+
         if (increment > 0)
         {
-            var check = await CheckUsageAsync(tenantId, metric, increment, cancellationToken);
+            var check = await TryIncrementUsageAsync(tenantId, metric, increment, cancellationToken);
             if (!check.IsAllowed)
             {
                 throw new InvalidOperationException(check.DenialReason);
             }
+
+            return;
         }
 
         var periodKey = GetPeriodKey(metric);
-        var counter = await dbContext.UsageCounters
-            .SingleOrDefaultAsync(
-                c => c.TenantId == tenantId && c.Metric == metric && c.PeriodKey == periodKey,
-                cancellationToken);
-
-        if (counter is null)
+        for (var attempt = 0; attempt < 3; attempt++)
         {
-            if (increment < 0)
+            try
             {
+                var counter = await dbContext.UsageCounters
+                    .SingleOrDefaultAsync(
+                        c => c.TenantId == tenantId && c.Metric == metric && c.PeriodKey == periodKey,
+                        cancellationToken);
+
+                if (counter is null)
+                {
+                    return;
+                }
+
+                counter.Count = Math.Max(0, counter.Count + increment);
+                await dbContext.SaveChangesAsync(cancellationToken);
                 return;
             }
-
-            counter = new UsageCounter
+            catch (DbUpdateException ex) when (IsUniqueViolation(ex))
             {
-                Id = Guid.NewGuid(),
-                TenantId = tenantId,
-                Metric = metric,
-                PeriodKey = periodKey,
-                Count = increment
-            };
-            dbContext.UsageCounters.Add(counter);
+                dbContext.ChangeTracker.Clear();
+            }
         }
-        else
+    }
+
+    private async Task<UsageCheckResult> TryIncrementUsageAsync(
+        Guid tenantId,
+        UsageMetric metric,
+        long increment,
+        CancellationToken cancellationToken)
+    {
+        for (var attempt = 0; attempt < 5; attempt++)
         {
-            counter.Count = Math.Max(0, counter.Count + increment);
+            var check = await CheckUsageAsync(tenantId, metric, increment, cancellationToken);
+            if (!check.IsAllowed)
+            {
+                return check;
+            }
+
+            try
+            {
+                var periodKey = GetPeriodKey(metric);
+                var counter = await dbContext.UsageCounters
+                    .SingleOrDefaultAsync(
+                        c => c.TenantId == tenantId && c.Metric == metric && c.PeriodKey == periodKey,
+                        cancellationToken);
+
+                if (counter is null)
+                {
+                    counter = new UsageCounter
+                    {
+                        Id = Guid.NewGuid(),
+                        TenantId = tenantId,
+                        Metric = metric,
+                        PeriodKey = periodKey,
+                        Count = increment
+                    };
+                    dbContext.UsageCounters.Add(counter);
+                }
+                else
+                {
+                    counter.Count += increment;
+                }
+
+                await dbContext.SaveChangesAsync(cancellationToken);
+                return UsageCheckResult.Allowed(metric, counter.Count, check.Limit);
+            }
+            catch (DbUpdateException ex) when (IsUniqueViolation(ex))
+            {
+                dbContext.ChangeTracker.Clear();
+            }
         }
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        return UsageCheckResult.Denied(
+            metric,
+            0,
+            0,
+            "Unable to record usage due to concurrent update.");
     }
+
+    private static bool IsUniqueViolation(DbUpdateException exception) =>
+        exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation };
 
     public Task AssignDefaultFreePlanAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
         AssignPlanAsync(tenantId, PlanCode.Free, EntitlementSource.FreePlan, cancellationToken);

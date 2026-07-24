@@ -16,6 +16,7 @@
     <Project Path="modules/ScopeSeal.Identity/ScopeSeal.Identity.csproj" />
     <Project Path="modules/ScopeSeal.Notifications/ScopeSeal.Notifications.csproj" />
     <Project Path="modules/ScopeSeal.Privacy/ScopeSeal.Privacy.csproj" />
+    <Project Path="modules/ScopeSeal.Infrastructure/ScopeSeal.Infrastructure.csproj" />
     <Project Path="modules/ScopeSeal.Shared/ScopeSeal.Shared.csproj" />
     <Project Path="modules/ScopeSeal.Tenancy/ScopeSeal.Tenancy.csproj" />
     <Project Path="modules/ScopeSeal.Workspaces/ScopeSeal.Workspaces.csproj" />

@@ -8,6 +8,10 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.OpenApi" Version="2.3.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
@@ -18,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\modules\ScopeSeal.Shared\ScopeSeal.Shared.csproj" />
+    <ProjectReference Include="..\..\modules\ScopeSeal.Infrastructure\ScopeSeal.Infrastructure.csproj" />
     <ProjectReference Include="..\..\modules\ScopeSeal.Identity\ScopeSeal.Identity.csproj" />
     <ProjectReference Include="..\..\modules\ScopeSeal.Tenancy\ScopeSeal.Tenancy.csproj" />
     <ProjectReference Include="..\..\modules\ScopeSeal.Workspaces\ScopeSeal.Workspaces.csproj" />

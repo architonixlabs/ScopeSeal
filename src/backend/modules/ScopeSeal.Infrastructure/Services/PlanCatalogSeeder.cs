@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using ScopeSeal.Entitlements.Configuration;
 using ScopeSeal.Entitlements.Domain;
 using ScopeSeal.Entitlements.Services;
@@ -35,7 +36,14 @@ public sealed class PlanCatalogSeeder(
             dbContext.PlanVersions.Add(CreatePlanVersion(planCode, definition, limitsJson));
         }
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        {
+            dbContext.ChangeTracker.Clear();
+        }
     }
 
     private static PlanVersion CreatePlanVersion(

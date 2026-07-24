@@ -6,6 +6,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <!-- NU1902/NU1903: tracked until Microsoft.OpenApi advisory GHSA-v5pm-xwqc-g5wc is resolved upstream -->
-    <NoWarn>$(NoWarn);NU1902;NU1903;CA1716;CA1305;CA1848;CA1873;CA1707</NoWarn>
+    <NoWarn>$(NoWarn);NU1902;NU1903;CA1716;CA1305;CA1848;CA1873;CA1707;CA1861</NoWarn>
   </PropertyGroup>
 </Project>

@@ -1,7 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ScopeSeal.Shared\ScopeSeal.Shared.csproj" />
+    <ProjectReference Include="..\ScopeSeal.Tenancy\ScopeSeal.Tenancy.csproj" />
   </ItemGroup>
 
 </Project>

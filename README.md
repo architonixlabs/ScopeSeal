@@ -50,7 +50,15 @@ dotnet run --project hosts/ScopeSeal.Api
 
 Health: `http://localhost:5000/health/live`  
 System status: `http://localhost:5000/api/v1/system/status`  
+Auth (Loop 2): `POST /api/v1/auth/register`, `POST /api/v1/auth/login`  
 OpenAPI (Development): `http://localhost:5000/openapi/v1.json`
+
+Migrations apply automatically in Development when PostgreSQL is available. To add a migration manually:
+
+```powershell
+cd src/backend
+dotnet ef migrations add <Name> --project modules/ScopeSeal.Infrastructure --startup-project hosts/ScopeSeal.Api --output-dir Persistence/Migrations
+```
 
 ### Frontend
 

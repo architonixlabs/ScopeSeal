@@ -38,6 +38,11 @@ public sealed class AuthOptions
 
     [Required]
     public string JwtAudience { get; init; } = "scopeseal-api";
+
+    [Range(1, 168)]
+    public int CookieExpirationHours { get; init; } = 8;
+
+    public bool RequireEmailVerification { get; init; } = true;
 }
 
 public sealed class StorageOptions

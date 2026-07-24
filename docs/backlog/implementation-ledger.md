@@ -20,7 +20,7 @@
 |------|------|--------|-------|
 | 0 | Discovery and risk framing | **Complete** | Docs, backlog, risk register, checklists |
 | 1 | Architecture foundation | **Complete** | Solution, modules, API skeleton, Angular workspace, Docker, CI |
-| 2 | Identity and tenancy | Placeholder | Next loop |
+| 2 | Identity and tenancy | **Complete** | EF Core, Identity, tenants, cookie auth, isolation tests |
 | 3 | Plans and entitlements | Placeholder | No Razorpay |
 | 4 | Workspace and contact management | Placeholder | |
 | 5 | Secure document upload | Placeholder | |
@@ -51,19 +51,20 @@
 | `.editorconfig`, `.env.example` | Complete |
 | Backend solution (`src/backend/ScopeSeal.slnx`) | **Complete** — Loop 1 |
 | Modular domain projects (14 modules + Shared) | **Complete** — markers/DI stubs |
+| Infrastructure module (`ScopeSeal.Infrastructure`) | **Complete** — Loop 2 |
 | API host (health, OpenAPI, logging, config validation) | **Complete** — Loop 1 |
+| Identity & tenancy (EF, auth endpoints, policies) | **Complete** — Loop 2 |
 | Worker host | Partially implemented — heartbeat only |
 | Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
 | CI pipeline (backend, clients, security) | **Complete** — Loop 1 |
 | Docker dev environment | **Complete** — PostgreSQL + Azurite |
 | Capacitor Android/iOS shells | Not started — Loop 2+ |
-| EF Core / PostgreSQL persistence | Not started — Loop 2 |
 | OpenTelemetry export | Deferred — ActivitySource registered; full OTel in Loop 13 |
 
 ## Last Updated
 
-2026-07-25 — Loop 1 completion
+2026-07-25 — Loop 2 completion
 
 ## Recommended Next Loop
 
-**Loop 2: Identity and tenancy** — ASP.NET Identity or equivalent, tenant model, EF Core DbContext, first migration, registration/sign-in API, cookie auth foundation, tenant isolation tests with Testcontainers.
+**Loop 3: Plans and entitlements** — plan configuration, entitlement service, capability checks, usage counters foundation; no Razorpay live or test keys required yet.

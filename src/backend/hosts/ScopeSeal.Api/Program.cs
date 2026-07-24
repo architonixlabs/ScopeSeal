@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using ScopeSeal.Api.Endpoints;
 using ScopeSeal.Api.Middleware;
 using ScopeSeal.Identity.DependencyInjection;
+using ScopeSeal.Infrastructure.DependencyInjection;
 using ScopeSeal.Shared.DependencyInjection;
+using ScopeSeal.Tenancy;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +24,16 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 builder.Services.AddScopeSealShared(builder.Configuration);
 builder.Services.AddIdentityModule();
+builder.Services.AddTenancyModule();
+
+var connectionString = builder.Configuration.GetConnectionString("Default");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("ConnectionStrings:Default is required.");
+}
+
+builder.Services.AddScopeSealInfrastructure(connectionString, builder.Environment);
+
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi(options =>
 {
@@ -35,18 +47,15 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
-var connectionString = builder.Configuration.GetConnectionString("Default");
-if (!string.IsNullOrWhiteSpace(connectionString))
-{
-    builder.Services.AddHealthChecks()
-        .AddNpgSql(connectionString, name: "postgresql", tags: ["ready"]);
-}
-else
-{
-    builder.Services.AddHealthChecks();
-}
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString, name: "postgresql", tags: ["ready"]);
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Testing")
+{
+    await app.Services.ApplyMigrationsAsync();
+}
 
 app.UseSerilogRequestLogging(options =>
 {
@@ -81,6 +90,10 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware<TenantContextMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -99,6 +112,8 @@ app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.Health
 app.MapHealthChecks("/health");
 
 app.MapSystemEndpoints();
+app.MapAuthEndpoints();
+app.MapTenantEndpoints();
 
 app.Run();
 

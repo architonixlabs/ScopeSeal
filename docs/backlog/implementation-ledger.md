@@ -24,7 +24,7 @@
 | 3 | Plans and entitlements | **Complete** | IEntitlementService, plan catalog, usage counters, Free defaults |
 | 4 | Workspace and contact management | **Complete** | Workspaces, parties, contacts, templates, dashboard API, audit events |
 | 5 | Secure document upload | **Complete** | Upload sessions, quarantine/permanent blob storage, content validation, malware scan abstraction, signed downloads |
-| 6 | Manual Agreement Snapshot | Placeholder | |
+| 6 | Manual Agreement Snapshot | **Complete** | Draft snapshot API, section editor, concurrency, entitlement gating |
 | 7 | Review and approval | Placeholder | |
 | 8 | Change Ledger | Placeholder | |
 | 9 | AI extraction | Placeholder | |
@@ -57,6 +57,7 @@
 | Plans & entitlements (IEntitlementService, plan catalog) | **Complete** — Loop 3 |
 | Workspaces & contacts (CRUD, parties, templates, dashboard) | **Complete** — Loop 4 |
 | Secure document upload (sessions, blob storage, validation, scan) | **Complete** — Loop 5 |
+| Manual Agreement Snapshot (draft editor API, sections, concurrency) | **Complete** — Loop 6 |
 | Audit events (IAuditService foundation) | **Complete** — Loop 4–5 |
 | Worker host | Partially implemented — heartbeat only |
 | Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
@@ -67,8 +68,8 @@
 
 ## Last Updated
 
-2026-07-25 — Loop 5 completion
+2026-07-25 — Loop 6 completion
 
 ## Recommended Next Loop
 
-**Loop 6: Manual Agreement Snapshot** — draft snapshot creation from workspace context and uploaded documents.
+**Loop 7: Review and approval** — share snapshots, reviewer invitations, approval records, immutability hashes.

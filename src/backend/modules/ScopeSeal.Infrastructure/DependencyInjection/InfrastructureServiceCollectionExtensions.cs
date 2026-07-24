@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using ScopeSeal.AgreementSnapshots.Services;
 using ScopeSeal.Audit.Services;
 using ScopeSeal.Documents.Services;
 using ScopeSeal.Entitlements.Services;
@@ -91,6 +92,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IWorkspaceTemplateService, WorkspaceTemplateService>();
         services.AddScoped<IUploadSessionService, UploadSessionService>();
         services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<IAgreementSnapshotService, AgreementSnapshotService>();
         services.AddSingleton<IContentTypeValidator, ContentTypeValidator>();
         services.AddSingleton<IMalwareScanner, DevelopmentMalwareScanner>();
 

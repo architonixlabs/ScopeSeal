@@ -2,7 +2,7 @@ using FluentAssertions;
 using NetArchTest.Rules;
 using ScopeSeal.Administration;
 using Xunit;
-using ScopeSeal.AgreementSnapshots;
+using ScopeSeal.AgreementSnapshots.DependencyInjection;
 using ScopeSeal.Approvals;
 using ScopeSeal.Audit.DependencyInjection;
 using ScopeSeal.Billing;

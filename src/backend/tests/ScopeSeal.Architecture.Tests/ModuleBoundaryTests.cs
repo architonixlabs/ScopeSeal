@@ -3,7 +3,7 @@ using NetArchTest.Rules;
 using ScopeSeal.Administration;
 using Xunit;
 using ScopeSeal.AgreementSnapshots.DependencyInjection;
-using ScopeSeal.Approvals;
+using ScopeSeal.Approvals.DependencyInjection;
 using ScopeSeal.Audit.DependencyInjection;
 using ScopeSeal.Billing;
 using ScopeSeal.ChangeLedger;

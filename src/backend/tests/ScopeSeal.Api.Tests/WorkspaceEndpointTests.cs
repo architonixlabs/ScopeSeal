@@ -7,6 +7,7 @@ using ScopeSeal.Workspaces.Domain;
 
 namespace ScopeSeal.Api.Tests;
 
+[Collection("PostgresIntegration")]
 public sealed class WorkspaceEndpointTests(PostgresWebApplicationFactory factory) : IClassFixture<PostgresWebApplicationFactory>
 {
     private readonly PostgresWebApplicationFactory _factory = factory;

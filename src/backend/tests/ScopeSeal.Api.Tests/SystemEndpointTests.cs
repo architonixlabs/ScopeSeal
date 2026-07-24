@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace ScopeSeal.Api.Tests;
 
+[Collection("PostgresIntegration")]
 public sealed class SystemEndpointTests(PostgresWebApplicationFactory factory) : IClassFixture<PostgresWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();

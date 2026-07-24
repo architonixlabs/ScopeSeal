@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace ScopeSeal.Api.Tests;
 
+[Collection("PostgresIntegration")]
 public sealed class TenantIsolationTests(PostgresWebApplicationFactory factory) : IClassFixture<PostgresWebApplicationFactory>
 {
     [Fact]

@@ -8,6 +8,7 @@ using ScopeSeal.Workspaces.Domain;
 
 namespace ScopeSeal.Api.Tests;
 
+[Collection("PostgresIntegration")]
 public sealed class AgreementSnapshotEndpointTests(PostgresWebApplicationFactory factory)
     : IClassFixture<PostgresWebApplicationFactory>
 {

@@ -1,7 +1,9 @@
 # ScopeSeal deploy — manual steps checklist
 
 One-time and recurring tasks on the deploy host (**192.168.1.8**) and your workstation.
-Placeholder `.env` files are created at repo root; replace every `CHANGE_ME` value before deploy.
+`.env.dev` / `.env.prod` ship with **sensible dev-friendly defaults** (not production secrets).
+You can deploy dev after host setup without hunting for placeholder strings — but you must still
+align the database password with `provision.sh` and replace the ArxMail key after gateway provision.
 
 Full runbook: [docs/deployment/ubuntu.md](../docs/deployment/ubuntu.md).
 
@@ -9,8 +11,8 @@ Full runbook: [docs/deployment/ubuntu.md](../docs/deployment/ubuntu.md).
 
 - [ ] **SSH access** — `ssh ram@192.168.1.8 docker version` succeeds
 - [ ] **`deploy/remote.conf`** — copy from `deploy/remote.conf.example` if missing; adjust `REMOTE_USER` if needed
-- [ ] **`.env.dev`** — replace placeholders (see [Secrets to replace](#secrets-to-replace))
-- [ ] **`.env.prod`** — only when preparing prod; never reuse dev secrets
+- [ ] **`.env.dev`** — defaults pre-filled; confirm `DB_PASSWORD` matches provision (see below)
+- [ ] **`.env.prod`** — only when preparing prod; override **all** defaults; never reuse dev secrets
 - [ ] **Docker context** — created automatically by `deploy.ps1` / `deploy.sh` on first run
 
 ## Deploy host (192.168.1.8)
@@ -34,10 +36,11 @@ From a machine with access to `DockerSecurity/shared-db`:
 export DOCKER_CONTEXT=avalokh-ubuntu
 cd /path/to/DockerSecurity/shared-db
 set -a; . ./.env; set +a
-scripts/provision.sh postgres scopeseal scopeseal_app '<choose-a-strong-password>'
+scripts/provision.sh postgres scopeseal scopeseal_app 'scopeseal_dev_2026'
 ```
 
-- [ ] Password in `.env.dev` as `DB_PASSWORD` **matches** provision script
+- [ ] Password in `.env.dev` as `DB_PASSWORD` **matches** provision script (default: `scopeseal_dev_2026`)
+- [ ] If you chose a different password at provision time, update `.env.dev` to match — do not leave the default
 - [ ] Do **not** copy credentials from `scan.env` or other secret stores into `.env`
 
 ### 3. Persistent data directories
@@ -62,13 +65,13 @@ docker --context avalokh-ubuntu compose -p arxmail-dev exec gateway \
   --origins https://scopeseal.app,http://192.168.1.8:8110,http://192.168.1.8:8112
 ```
 
-- [ ] Store printed `arx_sk_…` in `.env.dev` as `ARXMAIL_SECRET_KEY`
-- [ ] Prod: provision a **separate** site/key for `.env.prod`
+- [ ] Replace `ARXMAIL_SECRET_KEY` in `.env.dev` with the printed `arx_sk_…` (default is a placeholder)
+- [ ] Prod: provision a **separate** site/key for `.env.prod` and override the prod placeholder
 
 ### 5. JWT secret
 
-- [ ] Generate a unique 64+ character secret for `JWT_SECRET` in `.env.dev`
-- [ ] Prod: different secret in `.env.prod`
+- [ ] Dev default is pre-filled (`scopeseal-dev-jwt-signing-key-minimum-32-characters-long`); change if desired
+- [ ] Prod: override with a unique secret — never reuse the dev `JWT_SECRET`
 
 ### 6. Razorpay (optional — Loop 10)
 
@@ -122,15 +125,17 @@ Project key: `architonix-scopeseal` (see `sonar-project.properties`).
 | dev  | `scopeseal-dev`  | admin portal         | 8113 |
 | prod | `scopeseal-prod` | (mirror +1000)       | 9110–9113 |
 
-## Secrets to replace
+## Secrets and defaults
 
-| Variable | File | Action |
-|----------|------|--------|
-| `DB_PASSWORD` | `.env.dev`, `.env.prod` | Match `provision.sh` output |
-| `JWT_SECRET` | `.env.dev`, `.env.prod` | Generate unique per env |
-| `ARXMAIL_SECRET_KEY` | `.env.dev`, `.env.prod` | From ArxMail `provision` CLI |
-| `ScopeSeal__Billing__Razorpay__*` | `.env.dev` | Razorpay test dashboard (optional) |
-| `ScopeSeal__Auth__JwtSecret` | `.env.local` | Local dev only |
+| Variable | File | Default / action |
+|----------|------|------------------|
+| `DB_PASSWORD` | `.env.dev` | `scopeseal_dev_2026` — must match `provision.sh` password |
+| `DB_PASSWORD` | `.env.prod` | `scopeseal_prod_2026` placeholder — override before prod |
+| `JWT_SECRET` | `.env.dev` | Pre-filled dev signing key (32+ chars); override optional |
+| `JWT_SECRET` | `.env.prod` | Pre-filled placeholder — **must** override before prod |
+| `ARXMAIL_SECRET_KEY` | `.env.dev`, `.env.prod` | Placeholder — replace after ArxMail `provision` CLI |
+| `ScopeSeal__Billing__Razorpay__*` | `.env.dev`, `.env.local` | Obvious test placeholders; swap for dashboard keys when testing |
+| `ScopeSeal__Auth__JwtSecret` | `.env.local` | Pre-filled local signing key |
 
 ## Local Windows dev (unchanged)
 

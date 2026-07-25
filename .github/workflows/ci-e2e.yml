@@ -57,6 +57,15 @@ jobs:
           dotnet restore ScopeSeal.slnx
           dotnet publish hosts/ScopeSeal.Api/ScopeSeal.Api.csproj -c Release -o ../../.e2e-api
 
+      - name: Wait for PostgreSQL
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          for i in $(seq 1 30); do
+            PGPASSWORD=scopeseal_ci psql -h localhost -U scopeseal -d scopeseal -c 'SELECT 1' && exit 0
+            sleep 2
+          done
+          exit 1
+
       - name: Install client dependencies
         run: npm ci
 
@@ -73,12 +82,18 @@ jobs:
           ScopeSeal__Auth__RequireEmailVerification="false" \
           ASPNETCORE_URLS="http://localhost:5080" \
           dotnet ../../.e2e-api/ScopeSeal.Api.dll &
-          for i in $(seq 1 30); do curl -sf http://localhost:5080/health/live && break; sleep 2; done
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:5080/health/ready && exit 0
+            sleep 2
+          done
+          echo "API failed to become ready"
+          exit 1
 
-      - name: Start marketing SSR server
+      - name: Start marketing static server
         run: |
-          node dist/marketing-site/server/server.mjs &
-          for i in $(seq 1 20); do curl -sf http://localhost:4000 && break; sleep 1; done
+          npx --yes serve -s dist/marketing-site/browser -l 4000 &
+          for i in $(seq 1 20); do curl -sf http://localhost:4000/ >/dev/null && exit 0; sleep 1; done
+          exit 1
         env:
           PORT: 4000
 

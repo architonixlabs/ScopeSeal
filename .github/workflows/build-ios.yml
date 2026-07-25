@@ -40,6 +40,10 @@ jobs:
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
+      - name: Install CocoaPods dependencies
+        working-directory: src/clients/ios/App
+        run: pod install
+
       - name: Build for iOS Simulator
         working-directory: src/clients/ios/App
         run: |
@@ -48,9 +52,9 @@ jobs:
             -scheme App \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
-            build
+            build 2>&1 | tee build.log
 
       - name: Upload simulator build log
         if: always()

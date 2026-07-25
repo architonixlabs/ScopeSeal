@@ -51,7 +51,7 @@ jobs:
 
       - name: Validate Gradle wrapper
         working-directory: src/clients/android
-        run: ./gradlew --version
+        run: chmod +x gradlew && ./gradlew --version
 
       - name: Build debug APK
         working-directory: src/clients/android

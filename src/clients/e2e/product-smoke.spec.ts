@@ -14,6 +14,7 @@ test.describe('Product app shell', () => {
   });
 
   test('health proxy responds via product host', async ({ request }) => {
+    test.skip(process.env['CI'] === 'true', 'CI serves static product only; health proxy requires nginx edge');
     const response = await request.get(`${productBaseUrl}/health/ready`);
     expect(response.status()).toBe(200);
   });

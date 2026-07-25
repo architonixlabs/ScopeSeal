@@ -72,8 +72,8 @@ jobs:
       - name: Install Playwright
         run: npx playwright install chromium --with-deps
 
-      - name: Build marketing site
-        run: npm run build:marketing
+      - name: Build client apps for smoke tests
+        run: npm run build:product && npm run build:admin && npm run build:marketing
 
       - name: Start API
         run: |
@@ -90,19 +90,26 @@ jobs:
           echo "API failed to become ready"
           exit 1
 
-      - name: Start marketing static server
+      - name: Start static app servers
         run: |
           npx --yes serve -s dist/marketing-site/browser -l 4000 &
-          for i in $(seq 1 20); do curl -sf http://localhost:4000/ >/dev/null && exit 0; sleep 1; done
+          npx --yes serve -s dist/product-app/browser -l 4200 &
+          npx --yes serve -s dist/admin-portal/browser -l 4202 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4000/ >/dev/null && \
+            curl -sf http://localhost:4200/ >/dev/null && \
+            curl -sf http://localhost:4202/login >/dev/null && exit 0
+            sleep 1
+          done
           exit 1
-        env:
-          PORT: 4000
 
       - name: Run Playwright smoke tests
         env:
           CI: true
           SCOPESEAL_API_URL: http://localhost:5080
           SCOPESEAL_MARKETING_URL: http://localhost:4000
+          SCOPESEAL_PRODUCT_URL: http://localhost:4200
+          SCOPESEAL_ADMIN_URL: http://localhost:4202
         run: npx playwright test
 
       - name: Upload Playwright report

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
-using ScopeSeal.Privacy.Configuration;
+using ScopeSeal.Administration.Configuration;
+using ScopeSeal.Api.Authorization;
 using ScopeSeal.Privacy.Domain;
 using ScopeSeal.Privacy.Services;
 
@@ -7,8 +8,6 @@ namespace ScopeSeal.Api.Endpoints;
 
 public static class AdminPrivacyEndpoints
 {
-    public const string OperatorKeyHeader = "X-Platform-Operator-Key";
-
     public static IEndpointRouteBuilder MapAdminPrivacyEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/v1/admin/privacy")
@@ -32,10 +31,10 @@ public static class AdminPrivacyEndpoints
     private static async Task<IResult> ListQueueAsync(
         HttpRequest httpRequest,
         IPrivacyService privacyService,
-        IOptions<PrivacyOptions> privacyOptions,
+        IOptions<AdministrationOptions> administrationOptions,
         CancellationToken cancellationToken)
     {
-        if (!IsAuthorizedOperator(httpRequest, privacyOptions.Value))
+        if (!AdminOperatorAuth.IsAuthorized(httpRequest, administrationOptions.Value))
         {
             return Results.Unauthorized();
         }
@@ -49,10 +48,10 @@ public static class AdminPrivacyEndpoints
         UpdateAdminQueueItemRequest request,
         HttpRequest httpRequest,
         IPrivacyService privacyService,
-        IOptions<PrivacyOptions> privacyOptions,
+        IOptions<AdministrationOptions> administrationOptions,
         CancellationToken cancellationToken)
     {
-        if (!IsAuthorizedOperator(httpRequest, privacyOptions.Value))
+        if (!AdminOperatorAuth.IsAuthorized(httpRequest, administrationOptions.Value))
         {
             return Results.Unauthorized();
         }
@@ -76,10 +75,10 @@ public static class AdminPrivacyEndpoints
     private static async Task<IResult> ProcessPendingJobsAsync(
         HttpRequest httpRequest,
         IPrivacyService privacyService,
-        IOptions<PrivacyOptions> privacyOptions,
+        IOptions<AdministrationOptions> administrationOptions,
         CancellationToken cancellationToken)
     {
-        if (!IsAuthorizedOperator(httpRequest, privacyOptions.Value))
+        if (!AdminOperatorAuth.IsAuthorized(httpRequest, administrationOptions.Value))
         {
             return Results.Unauthorized();
         }
@@ -91,30 +90,15 @@ public static class AdminPrivacyEndpoints
     private static async Task<IResult> RunRetentionScanAsync(
         HttpRequest httpRequest,
         IPrivacyService privacyService,
-        IOptions<PrivacyOptions> privacyOptions,
+        IOptions<AdministrationOptions> administrationOptions,
         CancellationToken cancellationToken)
     {
-        if (!IsAuthorizedOperator(httpRequest, privacyOptions.Value))
+        if (!AdminOperatorAuth.IsAuthorized(httpRequest, administrationOptions.Value))
         {
             return Results.Unauthorized();
         }
 
         var recordsProcessed = await privacyService.RunRetentionFoundationJobAsync(cancellationToken);
         return Results.Ok(new { recordsProcessed });
-    }
-
-    private static bool IsAuthorizedOperator(HttpRequest request, PrivacyOptions options)
-    {
-        if (string.IsNullOrWhiteSpace(options.OperatorApiKey))
-        {
-            return false;
-        }
-
-        if (!request.Headers.TryGetValue(OperatorKeyHeader, out var values))
-        {
-            return false;
-        }
-
-        return string.Equals(values.ToString(), options.OperatorApiKey, StringComparison.Ordinal);
     }
 }

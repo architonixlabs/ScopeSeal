@@ -4,7 +4,7 @@ using System.Text.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using ScopeSeal.Api.Endpoints;
+using ScopeSeal.Api.Authorization;
 using ScopeSeal.Entitlements.Domain;
 using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Privacy.Domain;
@@ -100,7 +100,7 @@ public sealed class PrivacyEndpointTests(PrivacyPostgresWebApplicationFactory fa
 
         var adminClient = factory.CreateClient();
         adminClient.DefaultRequestHeaders.Add(
-            AdminPrivacyEndpoints.OperatorKeyHeader,
+            AdminOperatorAuth.OperatorKeyHeader,
             PrivacyPostgresWebApplicationFactory.OperatorApiKey);
 
         var queueResponse = await adminClient.GetAsync("/api/v1/admin/privacy/queue");
@@ -227,7 +227,7 @@ public sealed class PrivacyEndpointTests(PrivacyPostgresWebApplicationFactory fa
 
         var adminClient = factory.CreateClient();
         adminClient.DefaultRequestHeaders.Add(
-            AdminPrivacyEndpoints.OperatorKeyHeader,
+            AdminOperatorAuth.OperatorKeyHeader,
             PrivacyPostgresWebApplicationFactory.OperatorApiKey);
 
         var processResponse = await adminClient.PostAsync("/api/v1/admin/privacy/jobs/process-pending", null);

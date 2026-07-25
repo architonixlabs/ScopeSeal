@@ -9,7 +9,7 @@ public sealed class PrivacyPostgresWebApplicationFactory : PostgresWebApplicatio
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
-        builder.UseSetting("ScopeSeal:Privacy:OperatorApiKey", OperatorApiKey);
+        builder.UseSetting("ScopeSeal:Administration:OperatorApiKey", OperatorApiKey);
         builder.UseSetting("ScopeSeal:Privacy:ExportLinkExpiryDays", "7");
         builder.UseSetting("ScopeSeal:Privacy:BackupPurgeGraceDays", "30");
     }

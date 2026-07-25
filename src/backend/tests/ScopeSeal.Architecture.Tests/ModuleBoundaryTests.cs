@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NetArchTest.Rules;
-using ScopeSeal.Administration;
+using ScopeSeal.Administration.DependencyInjection;
 using Xunit;
 using ScopeSeal.AgreementSnapshots.DependencyInjection;
 using ScopeSeal.Approvals.DependencyInjection;

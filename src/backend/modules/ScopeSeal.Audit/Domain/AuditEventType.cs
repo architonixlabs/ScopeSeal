@@ -24,5 +24,10 @@ public enum AuditEventType
     ChangeRequestCreated = 19,
     ChangeRequestStatusChanged = 20,
     ChangeRequestAccepted = 21,
-    ChangeRequestImplemented = 22
+    ChangeRequestImplemented = 22,
+    ExtractionRunStarted = 23,
+    ExtractionRunCompleted = 24,
+    ExtractionRunFailed = 25,
+    ExtractionFactReviewed = 26,
+    ExtractionFactsApplied = 27
 }

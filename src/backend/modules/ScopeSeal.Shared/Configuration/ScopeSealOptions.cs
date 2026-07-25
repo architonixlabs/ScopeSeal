@@ -79,4 +79,12 @@ public sealed class AiOptions
     [Required]
     [RegularExpression("^(ManualOnly|LocalProcessing|ApprovedExternalProvider)$")]
     public string Mode { get; init; } = "ManualOnly";
+
+    public bool KillSwitchEnabled { get; init; }
+
+    [Range(1, 1000)]
+    public int MaxFactsPerRun { get; init; } = 100;
+
+    [Range(1, 100)]
+    public int MaxExtractionJobsPerBatch { get; init; } = 5;
 }

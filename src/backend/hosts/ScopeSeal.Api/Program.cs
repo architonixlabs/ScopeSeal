@@ -10,6 +10,7 @@ using ScopeSeal.Audit.DependencyInjection;
 using ScopeSeal.ChangeLedger.DependencyInjection;
 using ScopeSeal.Documents.DependencyInjection;
 using ScopeSeal.Entitlements.DependencyInjection;
+using ScopeSeal.Extraction.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Infrastructure.DependencyInjection;
 using ScopeSeal.Shared.DependencyInjection;
@@ -39,6 +40,7 @@ builder.Services.AddDocumentsModule();
 builder.Services.AddAgreementSnapshotsModule();
 builder.Services.AddApprovalsModule();
 builder.Services.AddChangeLedgerModule();
+builder.Services.AddExtractionModule();
 builder.Services.AddAuditModule();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
@@ -145,6 +147,7 @@ app.MapAgreementSnapshotEndpoints();
 app.MapReviewApprovalEndpoints();
 app.MapExternalReviewEndpoints();
 app.MapChangeLedgerEndpoints();
+app.MapExtractionEndpoints();
 
 app.Run();
 

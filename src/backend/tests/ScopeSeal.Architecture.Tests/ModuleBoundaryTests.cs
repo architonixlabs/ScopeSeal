@@ -9,7 +9,7 @@ using ScopeSeal.Billing;
 using ScopeSeal.ChangeLedger.DependencyInjection;
 using ScopeSeal.Documents.DependencyInjection;
 using ScopeSeal.Entitlements.DependencyInjection;
-using ScopeSeal.Extraction;
+using ScopeSeal.Extraction.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Notifications;
 using ScopeSeal.Privacy;

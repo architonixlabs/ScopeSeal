@@ -27,7 +27,7 @@
 | 6 | Manual Agreement Snapshot | **Complete** | Draft snapshot API, section editor, concurrency, entitlement gating |
 | 7 | Review and approval | **Complete** | Invitations, external review, comments, approval hash, immutability |
 | 8 | Change Ledger | **Complete** | Change requests, impacts, clone-to-draft, diff API, reapproval superseding |
-| 9 | AI extraction | Placeholder | |
+| 9 | AI extraction | **Complete** | Provider abstraction, job pipeline, draft facts, provenance, ManualOnly default |
 | 10 | Razorpay integration | Placeholder | Test mode only |
 | 11 | Privacy centre | Placeholder | |
 | 12 | Administration and support | Placeholder | |
@@ -60,8 +60,9 @@
 | Manual Agreement Snapshot (draft editor API, sections, concurrency) | **Complete** — Loop 6 |
 | Review and approval (invitations, external review, approval hash) | **Complete** — Loop 7 |
 | Change Ledger (change requests, version diff, reapproval) | **Complete** — Loop 8 |
+| AI extraction (provider abstraction, job pipeline, draft facts) | **Complete** — Loop 9 |
 | Audit events (IAuditService foundation) | **Complete** — Loop 4–5 |
-| Worker host | Partially implemented — heartbeat only |
+| Worker host | Partially implemented — extraction job polling; preview jobs deferred |
 | Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
 | CI pipeline (backend, clients, security) | **Complete** — Loop 1 |
 | Docker dev environment | **Complete** — PostgreSQL + Azurite |
@@ -70,8 +71,8 @@
 
 ## Last Updated
 
-2026-07-25 — Loop 8 completion
+2026-07-25 — Loop 9 completion
 
 ## Recommended Next Loop
 
-**Loop 9: AI extraction** — extraction runs, draft facts, provenance, ManualOnly default.
+**Loop 10: Razorpay integration** — test-mode checkout, webhook verification, entitlement reconciliation.

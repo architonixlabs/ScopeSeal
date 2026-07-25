@@ -5,21 +5,19 @@ import { RouterOutlet } from '@angular/router';
   selector: 'ss-root',
   imports: [RouterOutlet],
   template: `
-    <main class="shell">
-      <header>
-        <h1>ScopeSeal</h1>
-        <p>Product application shell — Loop 1 foundation</p>
+    <div class="ss-shell">
+      <header class="ss-shell__header">
+        <div class="ss-shell__header-inner">
+          <div class="ss-shell__brand">
+            <h1>ScopeSeal</h1>
+            <p class="ss-shell__tagline">Agreement snapshots, approvals, and change control.</p>
+          </div>
+        </div>
       </header>
-      <router-outlet />
-    </main>
-  `,
-  styles: `
-    .shell {
-      font-family: system-ui, sans-serif;
-      margin: 2rem auto;
-      max-width: 48rem;
-      padding: 0 1rem;
-    }
+      <main class="ss-shell__main">
+        <router-outlet />
+      </main>
+    </div>
   `,
 })
 export class App {}

@@ -51,7 +51,10 @@
                 "input": "projects/product-app/public"
               }
             ],
-            "styles": ["projects/product-app/src/styles.scss"]
+            "styles": ["projects/product-app/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/shared-ui/src/styles"]
+            }
           },
           "configurations": {
             "production": {
@@ -137,6 +140,9 @@
               }
             ],
             "styles": ["projects/marketing-site/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/shared-ui/src/styles"]
+            },
             "server": "projects/marketing-site/src/main.server.ts",
             "outputMode": "server",
             "security": {
@@ -229,7 +235,10 @@
                 "input": "projects/admin-portal/public"
               }
             ],
-            "styles": ["projects/admin-portal/src/styles.scss"]
+            "styles": ["projects/admin-portal/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/shared-ui/src/styles"]
+            }
           },
           "configurations": {
             "production": {

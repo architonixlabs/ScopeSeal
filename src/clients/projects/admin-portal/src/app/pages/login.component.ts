@@ -7,40 +7,30 @@ import { AdminAuthService } from '../core/admin-auth.service';
   selector: 'ss-admin-login',
   imports: [FormsModule],
   template: `
-    <section class="panel">
-      <h1>Operator sign-in</h1>
-      <p>Restricted administration portal. Metadata-only views — no customer document access.</p>
-      <form (ngSubmit)="submit()">
-        <label>
-          Platform operator key
-          <input type="password" [(ngModel)]="key" name="key" required autocomplete="off" />
-        </label>
-        @if (error()) {
-          <p class="error">{{ error() }}</p>
-        }
-        <button type="submit">Continue</button>
-      </form>
+    <section class="ss-card ss-panel">
+      <div class="ss-card__body">
+        <h1>Operator sign-in</h1>
+        <p>Restricted administration portal. Metadata-only views — no customer document access.</p>
+        <form (ngSubmit)="submit()">
+          <div class="ss-field">
+            <label for="operator-key">Platform operator key</label>
+            <input
+              id="operator-key"
+              class="ss-input"
+              type="password"
+              [(ngModel)]="key"
+              name="key"
+              required
+              autocomplete="off"
+            />
+          </div>
+          @if (error()) {
+            <p class="ss-error">{{ error() }}</p>
+          }
+          <button type="submit" class="ss-btn ss-btn--primary">Continue</button>
+        </form>
+      </div>
     </section>
-  `,
-  styles: `
-    .panel {
-      max-width: 28rem;
-      margin: 4rem auto;
-      padding: 1.5rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    label {
-      display: grid;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    input {
-      padding: 0.5rem;
-    }
-    .error {
-      color: #b00020;
-    }
   `,
 })
 export class LoginComponent {

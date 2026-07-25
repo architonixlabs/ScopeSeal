@@ -12,15 +12,22 @@ interface FeatureFlag {
   template: `
     <h2>Feature flags</h2>
     @if (error()) {
-      <p>{{ error() }}</p>
+      <p class="ss-error">{{ error() }}</p>
     } @else {
-      <ul>
+      <ul class="ss-stat-list">
         @for (flag of flags(); track flag.key) {
           <li>
-            <strong>{{ flag.key }}</strong> — {{ flag.isEnabled ? 'Enabled' : 'Disabled' }}
-            <button type="button" (click)="toggle(flag)">Toggle</button>
-            <p>{{ flag.description }}</p>
+            <div>
+              <strong>{{ flag.key }}</strong>
+              <span> — {{ flag.isEnabled ? 'Enabled' : 'Disabled' }}</span>
+              <p>{{ flag.description }}</p>
+            </div>
+            <button type="button" class="ss-btn ss-btn--secondary" (click)="toggle(flag)">
+              Toggle
+            </button>
           </li>
+        } @empty {
+          <li class="ss-empty">No feature flags configured.</li>
         }
       </ul>
     }

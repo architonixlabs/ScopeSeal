@@ -6,14 +6,14 @@ import { AdminApiService } from '../core/admin-api.service';
   template: `
     <h2>Platform dashboard</h2>
     @if (loading()) {
-      <p>Loading metadata…</p>
+      <p class="ss-loading">Loading metadata…</p>
     } @else if (error()) {
-      <p>{{ error() }}</p>
+      <p class="ss-error">{{ error() }}</p>
     } @else {
-      <ul>
-        <li>Feature flags: {{ featureFlagCount() }}</li>
-        <li>Open grievances: {{ grievanceCount() }}</li>
-        <li>Dead-letter jobs: {{ deadLetterCount() }}</li>
+      <ul class="ss-stat-list">
+        <li><span>Feature flags</span> <strong>{{ featureFlagCount() }}</strong></li>
+        <li><span>Open grievances</span> <strong>{{ grievanceCount() }}</strong></li>
+        <li><span>Dead-letter jobs</span> <strong>{{ deadLetterCount() }}</strong></li>
       </ul>
     }
   `,

@@ -3,6 +3,11 @@
 # Environment and secrets
 .env
 .env.local
+.env.dev
+.env.prod
+deploy/.env
+deploy/.env.*
+deploy/remote.conf
 .env.*.local
 *.pfx
 *.p12

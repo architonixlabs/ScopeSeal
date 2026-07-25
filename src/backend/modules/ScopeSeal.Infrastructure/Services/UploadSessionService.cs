@@ -242,12 +242,17 @@ public sealed class UploadSessionService(
             return (null, session.RejectionReason);
         }
 
-        var hashBytes = await SHA256.HashDataAsync(quarantineStream, cancellationToken);
+        // Azure blob streams are not seekable; buffer once for hash + malware scan.
+        await using var bufferedContent = new MemoryStream();
+        await quarantineStream.CopyToAsync(bufferedContent, cancellationToken);
+        bufferedContent.Position = 0;
+
+        var hashBytes = await SHA256.HashDataAsync(bufferedContent, cancellationToken);
         var hashValue = Convert.ToHexString(hashBytes).ToLowerInvariant();
-        quarantineStream.Position = 0;
+        bufferedContent.Position = 0;
 
         var scanOutcome = await malwareScanner.ScanAsync(
-            quarantineStream,
+            bufferedContent,
             session.DeclaredContentType,
             cancellationToken);
 

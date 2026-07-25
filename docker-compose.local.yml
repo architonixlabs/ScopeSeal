@@ -1,0 +1,38 @@
+# Local Windows / isolated dev infrastructure only (PostgreSQL + Azurite).
+# The API and Angular apps run on the host via start.bat — not in this compose file.
+#
+#   docker compose -f docker-compose.local.yml up -d
+#
+# Deploy-host stacks use docker-compose.yml (+ prod overlay) via deploy.ps1 / deploy.sh.
+services:
+  postgres:
+    profiles: ["local"]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scopeseal
+      POSTGRES_USER: scopeseal
+      POSTGRES_PASSWORD: scopeseal_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - scopeseal_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scopeseal -d scopeseal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  azurite:
+    profiles: ["local"]
+    image: mcr.microsoft.com/azure-storage/azurite:3.34.0
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - scopeseal_azurite:/data
+
+volumes:
+  scopeseal_pgdata:
+  scopeseal_azurite:

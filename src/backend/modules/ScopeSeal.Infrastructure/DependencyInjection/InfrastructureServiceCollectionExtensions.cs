@@ -20,6 +20,7 @@ using ScopeSeal.Identity.Services;
 using ScopeSeal.Infrastructure.Persistence;
 using ScopeSeal.Infrastructure.Security;
 using ScopeSeal.Infrastructure.Services;
+using ScopeSeal.Infrastructure.Services.Email;
 using ScopeSeal.Infrastructure.Services.Providers;
 using ScopeSeal.Infrastructure.Storage;
 using ScopeSeal.Shared.Configuration;
@@ -131,6 +132,27 @@ public static class InfrastructureServiceCollectionExtensions
         {
             services.AddSingleton<IBlobStorageService, AzuriteBlobStorageService>();
         }
+
+        services.AddHttpClient<ArxMailGatewayClient>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+
+        services.AddSingleton<IEmailVerificationService>(sp =>
+        {
+            var provider = sp.GetRequiredService<IOptions<ScopeSealOptions>>().Value.Notifications.Email.Provider;
+            return provider == "ArxMail"
+                ? ActivatorUtilities.CreateInstance<ArxMailEmailVerificationService>(sp)
+                : ActivatorUtilities.CreateInstance<DevelopmentEmailVerificationService>(sp);
+        });
+
+        services.AddSingleton<IOutboundEmailService>(sp =>
+        {
+            var provider = sp.GetRequiredService<IOptions<ScopeSealOptions>>().Value.Notifications.Email.Provider;
+            return provider == "ArxMail"
+                ? ActivatorUtilities.CreateInstance<ArxMailOutboundEmailService>(sp)
+                : ActivatorUtilities.CreateInstance<DevelopmentOutboundEmailService>(sp);
+        });
 
         services.AddScoped<PlanCatalogSeeder>();
         services.AddScoped<WorkspaceTemplateSeeder>();

@@ -1,41 +1,38 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'ss-marketing-root',
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
-    <main class="shell">
-      <header>
-        <h1><a routerLink="/">ScopeSeal</a></h1>
-        <p>Communication clarity for interior design and home renovation projects.</p>
-        <nav aria-label="Primary">
-          <a routerLink="/features">Features</a>
-          <a routerLink="/pricing">Pricing</a>
-          <a routerLink="/security">Security</a>
-          <a routerLink="/login">Login</a>
-          <a routerLink="/register">Register</a>
-        </nav>
+    <div class="ss-shell">
+      <header class="ss-shell__header">
+        <div class="ss-shell__header-inner">
+          <div class="ss-shell__brand">
+            <h1><a routerLink="/">ScopeSeal</a></h1>
+            <p class="ss-shell__tagline">
+              Communication clarity for interior design and home renovation projects.
+            </p>
+          </div>
+          <nav class="ss-nav" aria-label="Primary">
+            <a class="ss-nav__link" routerLink="/features" routerLinkActive="active">Features</a>
+            <a class="ss-nav__link" routerLink="/how-it-works" routerLinkActive="active">How it works</a>
+            <a class="ss-nav__link" routerLink="/pricing" routerLinkActive="active">Pricing</a>
+            <a class="ss-nav__link" routerLink="/security" routerLinkActive="active">Security</a>
+            <a class="ss-nav__link" routerLink="/login" routerLinkActive="active">Login</a>
+            <a class="ss-nav__link ss-nav__link--cta" routerLink="/register" routerLinkActive="active">
+              Register
+            </a>
+          </nav>
+        </div>
       </header>
-      <router-outlet />
-    </main>
-  `,
-  styles: `
-    .shell {
-      font-family: system-ui, sans-serif;
-      margin: 2rem auto;
-      max-width: 48rem;
-      padding: 0 1rem;
-    }
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    nav a {
-      color: #0b5;
-    }
+      <main class="ss-shell__main">
+        <router-outlet />
+      </main>
+      <footer class="ss-shell__footer">
+        ScopeSeal — approval records and change control. Not legal advice.
+      </footer>
+    </div>
   `,
 })
 export class App {}

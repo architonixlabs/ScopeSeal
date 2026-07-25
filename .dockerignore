@@ -1,0 +1,12 @@
+.git
+.gitignore
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/.angular/
+docs/
+*.md
+.env
+.env.*
+!*.example

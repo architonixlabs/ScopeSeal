@@ -13,13 +13,15 @@ interface QueueItem {
     <h2>Privacy operator queue</h2>
     <p>Queue metadata only — request subjects, not exported payloads.</p>
     @if (error()) {
-      <p>{{ error() }}</p>
+      <p class="ss-error">{{ error() }}</p>
     } @else {
-      <ul>
+      <ul class="ss-stat-list">
         @for (item of items(); track item.publicId) {
-          <li>{{ item.publicId }} — {{ item.queueStatus }}</li>
+          <li>
+            <span>{{ item.publicId }} — {{ item.queueStatus }}</span>
+          </li>
         } @empty {
-          <li>No queue items.</li>
+          <li class="ss-empty">No queue items.</li>
         }
       </ul>
     }

@@ -17,51 +17,49 @@ interface TenantRow {
   template: `
     <h2>Tenant search</h2>
     <p>Metadata-only listing — no workspace or document content.</p>
-    <form (ngSubmit)="search()">
-      <input [(ngModel)]="query" name="query" placeholder="Tenant name or public ID" />
-      <button type="submit">Search</button>
+    <form class="ss-form-row" (ngSubmit)="search()">
+      <input
+        class="ss-input"
+        [(ngModel)]="query"
+        name="query"
+        placeholder="Tenant name or public ID"
+      />
+      <button type="submit" class="ss-btn ss-btn--primary">Search</button>
     </form>
     @if (error()) {
-      <p>{{ error() }}</p>
+      <p class="ss-error">{{ error() }}</p>
     }
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Plan</th>
-          <th>Members</th>
-          <th>Created</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (tenant of tenants(); track tenant.publicId) {
+    <div class="ss-table-wrap">
+      <table class="ss-table">
+        <thead>
           <tr>
-            <td>{{ tenant.name }}</td>
-            <td>{{ tenant.currentPlanCode }}</td>
-            <td>{{ tenant.memberCount }}</td>
-            <td>{{ tenant.createdAtUtc | date: 'medium' }}</td>
+            <th>Name</th>
+            <th>Plan</th>
+            <th>Members</th>
+            <th>Created</th>
           </tr>
-        }
-      </tbody>
-    </table>
-  `,
-  styles: `
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th,
-    td {
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      padding: 0.5rem;
-    }
-    form {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
+        </thead>
+        <tbody>
+          @for (tenant of tenants(); track tenant.publicId) {
+            <tr>
+              <td>{{ tenant.name }}</td>
+              <td>{{ tenant.currentPlanCode }}</td>
+              <td>{{ tenant.memberCount }}</td>
+              <td>{{ tenant.createdAtUtc | date: 'medium' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4">
+                <div class="ss-empty">
+                  <p class="ss-empty__title">No tenants found</p>
+                  <p>Try a different search term.</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   `,
 })
 export class TenantsComponent {

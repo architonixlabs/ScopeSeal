@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ScopeSeal.AgreementSnapshots.Domain;
 using ScopeSeal.Approvals.Domain;
 using ScopeSeal.Audit.Domain;
+using ScopeSeal.Billing.Domain;
 using ScopeSeal.ChangeLedger.Domain;
 using ScopeSeal.Documents.Domain;
 using ScopeSeal.Entitlements.Domain;
@@ -96,6 +97,12 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<ExtractionRun> ExtractionRuns => Set<ExtractionRun>();
 
     public DbSet<ExtractedFact> ExtractedFacts => Set<ExtractedFact>();
+
+    public DbSet<BillingCustomer> BillingCustomers => Set<BillingCustomer>();
+
+    public DbSet<TenantSubscription> TenantSubscriptions => Set<TenantSubscription>();
+
+    public DbSet<ProcessedWebhookEvent> ProcessedWebhookEvents => Set<ProcessedWebhookEvent>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -612,6 +619,39 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.Property(a => a.ConfirmationStatement).HasMaxLength(1000).IsRequired();
             entity.HasIndex(a => a.PublicId).IsUnique();
             entity.HasIndex(a => new { a.TenantId, a.AgreementSnapshotId }).IsUnique();
+        });
+
+        builder.Entity<BillingCustomer>(entity =>
+        {
+            entity.ToTable("billing_customers");
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.ExternalCustomerId).HasMaxLength(100).IsRequired();
+            entity.HasIndex(c => c.TenantId).IsUnique();
+            entity.HasIndex(c => c.ExternalCustomerId).IsUnique();
+        });
+
+        builder.Entity<TenantSubscription>(entity =>
+        {
+            entity.ToTable("tenant_subscriptions");
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.ExternalSubscriptionId).HasMaxLength(100).IsRequired();
+            entity.Property(s => s.PlanCode).HasConversion<string>().HasMaxLength(20);
+            entity.Property(s => s.Interval).HasConversion<string>().HasMaxLength(20);
+            entity.Property(s => s.Status).HasConversion<string>().HasMaxLength(30);
+            entity.HasIndex(s => s.PublicId).IsUnique();
+            entity.HasIndex(s => s.ExternalSubscriptionId).IsUnique();
+            entity.HasIndex(s => new { s.TenantId, s.Status });
+        });
+
+        builder.Entity<ProcessedWebhookEvent>(entity =>
+        {
+            entity.ToTable("processed_webhook_events");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ProviderEventId).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.EventType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.PayloadFingerprint).HasMaxLength(64).IsRequired();
+            entity.HasIndex(e => e.ProviderEventId).IsUnique();
+            entity.HasIndex(e => e.PayloadFingerprint).IsUnique();
         });
     }
 }

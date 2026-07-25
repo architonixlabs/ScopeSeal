@@ -11,6 +11,7 @@ using ScopeSeal.Audit.Services;
 using ScopeSeal.ChangeLedger.Services;
 using ScopeSeal.Documents.Services;
 using ScopeSeal.Entitlements.Services;
+using ScopeSeal.Billing.Services;
 using ScopeSeal.Extraction.Services;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Identity.Services;
@@ -101,6 +102,15 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IChangeLedgerService, ChangeLedgerService>();
         services.AddScoped<IExtractionService, ExtractionService>();
         services.AddScoped<IProcessingJobProcessor, ProcessingJobProcessor>();
+        services.AddScoped<IBillingService, BillingService>();
+        services.AddSingleton<PaymentGatewayFactory>();
+        services.AddSingleton<LocalTestPaymentGateway>();
+        services.AddSingleton<RazorpayPaymentGateway>();
+        services.AddHttpClient("Razorpay", client =>
+        {
+            client.BaseAddress = new Uri("https://api.razorpay.com/v1/");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
         services.AddSingleton<IExtractionSchemaValidator, ExtractionSchemaValidator>();
         services.AddSingleton<AiExtractionProviderFactory>();
         services.AddSingleton<ManualOnlyExtractionProvider>();

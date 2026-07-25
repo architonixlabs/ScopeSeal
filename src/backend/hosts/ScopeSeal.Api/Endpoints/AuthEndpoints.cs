@@ -1,6 +1,8 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Identity;
+using ScopeSeal.Api.DependencyInjection;
 using ScopeSeal.Identity.Authorization;
 using ScopeSeal.Identity.Services;
 using ScopeSeal.Tenancy.Services;
@@ -14,6 +16,7 @@ public static class AuthEndpoints
         var group = app.MapGroup("/api/v1/auth").WithTags("Authentication");
 
         group.MapPost("/register", RegisterAsync)
+            .RequireRateLimiting(RateLimitingExtensions.AuthPolicy)
             .WithName("Register")
             .WithSummary("Register a new user and default tenant.")
             .Produces(StatusCodes.Status201Created)
@@ -21,6 +24,7 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPost("/login", LoginAsync)
+            .RequireRateLimiting(RateLimitingExtensions.AuthPolicy)
             .WithName("Login")
             .WithSummary("Sign in with email and password.")
             .Produces(StatusCodes.Status204NoContent)

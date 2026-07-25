@@ -4,7 +4,7 @@ using Testcontainers.PostgreSql;
 
 namespace ScopeSeal.Api.Tests;
 
-public class PostgresWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public sealed class SecurityPostgresWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private PostgreSqlContainer? _container;
 

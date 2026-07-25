@@ -31,7 +31,7 @@
 | 10 | Razorpay integration | **Complete** | Test-mode IPaymentGateway, checkout, webhooks, entitlement reconciliation |
 | 11 | Privacy centre | **Complete** | Notice versioning, consent, requests, export/deletion foundations, subprocessor API |
 | 12 | Administration and support | **Complete** | Admin API, operator portal shell, metadata-only support access |
-| 13 | Hardening | Placeholder | |
+| 13 | Hardening | **Complete** | Security headers, rate limits, OTel wiring, security tests, a11y CI foundations |
 | 14 | Launch readiness | Placeholder | |
 
 ## Repository Scaffold Status
@@ -64,18 +64,19 @@
 | Razorpay web billing (IPaymentGateway, webhooks, reconciliation) | **Complete** — Loop 10 |
 | Privacy centre (consent, requests, export/deletion foundations) | **Complete** — Loop 11 |
 | Administration and support (admin API, operator portal shell) | **Complete** — Loop 12 |
+| Security hardening (headers, rate limits, OTel, security tests) | **Complete** — Loop 13 |
 | Audit events (IAuditService foundation) | **Complete** — Loop 4–5 |
 | Worker host | Partially implemented — extraction job polling; preview jobs deferred |
 | Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
 | CI pipeline (backend, clients, security) | **Complete** — Loop 1 |
 | Docker dev environment | **Complete** — PostgreSQL + Azurite |
 | Capacitor Android/iOS shells | Not started — Loop 2+ |
-| OpenTelemetry export | Deferred — ActivitySource registered; full OTel in Loop 13 |
+| OpenTelemetry export | **Complete** — opt-in OTLP/console via Loop 13 config |
 
 ## Last Updated
 
-2026-07-25 — Loop 12 completion
+2026-07-25 — Loop 13 completion
 
 ## Recommended Next Loop
 
-**Loop 13: Hardening** — observability export, rate limits, security tests, performance budgets.
+**Loop 14: Launch readiness** — mobile shells, E2E Playwright, performance budgets, production config review.

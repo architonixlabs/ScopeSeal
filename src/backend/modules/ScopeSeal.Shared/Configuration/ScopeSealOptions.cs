@@ -28,6 +28,9 @@ public sealed class ScopeSealOptions
 
     [Required]
     public DocumentUploadOptions DocumentUpload { get; init; } = new();
+
+    [Required]
+    public SecurityOptions Security { get; init; } = new();
 }
 
 public sealed class DocumentUploadOptions

@@ -11,6 +11,7 @@
     "build:product": "ng build product-app",
     "build:marketing": "ng build marketing-site",
     "build:admin": "ng build admin-portal",
+    "audit:a11y": "node tools/run-a11y-audit.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:marketing-site": "node dist/marketing-site/server/server.mjs"

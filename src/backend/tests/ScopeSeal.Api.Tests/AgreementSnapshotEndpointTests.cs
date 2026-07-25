@@ -174,7 +174,8 @@ public sealed class AgreementSnapshotEndpointTests(PostgresWebApplicationFactory
             email,
             password = "SecurePass1!",
             displayName = "Snapshot Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 

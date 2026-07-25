@@ -10,6 +10,7 @@ using ScopeSeal.Documents.Domain;
 using ScopeSeal.Entitlements.Domain;
 using ScopeSeal.Extraction.Domain;
 using ScopeSeal.Identity.Domain;
+using ScopeSeal.Privacy.Domain;
 using ScopeSeal.Tenancy.Domain;
 using ScopeSeal.Workspaces.Domain;
 
@@ -104,6 +105,22 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
 
     public DbSet<ProcessedWebhookEvent> ProcessedWebhookEvents => Set<ProcessedWebhookEvent>();
 
+    public DbSet<PrivacyNoticeVersion> PrivacyNoticeVersions => Set<PrivacyNoticeVersion>();
+
+    public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
+
+    public DbSet<PrivacyRequest> PrivacyRequests => Set<PrivacyRequest>();
+
+    public DbSet<DataExportJob> DataExportJobs => Set<DataExportJob>();
+
+    public DbSet<DeletionOrchestrationJob> DeletionOrchestrationJobs => Set<DeletionOrchestrationJob>();
+
+    public DbSet<RetentionJobRun> RetentionJobRuns => Set<RetentionJobRun>();
+
+    public DbSet<SubprocessorEntry> SubprocessorEntries => Set<SubprocessorEntry>();
+
+    public DbSet<AdminPrivacyQueueItem> AdminPrivacyQueueItems => Set<AdminPrivacyQueueItem>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -111,6 +128,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
         builder.Entity<ApplicationUser>(entity =>
         {
             entity.Property(u => u.DisplayName).HasMaxLength(200).IsRequired();
+            entity.Property(u => u.ConfirmedAge18OrAbove).IsRequired();
             entity.HasIndex(u => u.Email).IsUnique();
         });
 
@@ -652,6 +670,97 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.Property(e => e.PayloadFingerprint).HasMaxLength(64).IsRequired();
             entity.HasIndex(e => e.ProviderEventId).IsUnique();
             entity.HasIndex(e => e.PayloadFingerprint).IsUnique();
+        });
+
+        builder.Entity<PrivacyNoticeVersion>(entity =>
+        {
+            entity.ToTable("privacy_notice_versions");
+            entity.HasKey(n => n.Id);
+            entity.Property(n => n.Version).HasMaxLength(20).IsRequired();
+            entity.Property(n => n.Title).HasMaxLength(200).IsRequired();
+            entity.Property(n => n.Summary).HasMaxLength(4000).IsRequired();
+            entity.HasIndex(n => n.PublicId).IsUnique();
+            entity.HasIndex(n => n.Version).IsUnique();
+        });
+
+        builder.Entity<ConsentRecord>(entity =>
+        {
+            entity.ToTable("consent_records");
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.ConsentType).HasConversion<string>().HasMaxLength(30);
+            entity.Property(c => c.Purpose).HasMaxLength(500).IsRequired();
+            entity.Property(c => c.WithdrawalReason).HasMaxLength(1000);
+            entity.HasIndex(c => c.PublicId).IsUnique();
+            entity.HasIndex(c => new { c.TenantId, c.UserId, c.NoticeVersionId, c.ConsentType }).IsUnique();
+        });
+
+        builder.Entity<PrivacyRequest>(entity =>
+        {
+            entity.ToTable("privacy_requests");
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.RequestType).HasConversion<string>().HasMaxLength(30);
+            entity.Property(r => r.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(r => r.Subject).HasMaxLength(200).IsRequired();
+            entity.Property(r => r.Details).HasMaxLength(4000).IsRequired();
+            entity.Property(r => r.CorrectionDetails).HasMaxLength(4000);
+            entity.Property(r => r.GrievanceCategory).HasMaxLength(100);
+            entity.HasIndex(r => r.PublicId).IsUnique();
+            entity.HasIndex(r => new { r.TenantId, r.UserId, r.CreatedAtUtc });
+        });
+
+        builder.Entity<DataExportJob>(entity =>
+        {
+            entity.ToTable("data_export_jobs");
+            entity.HasKey(j => j.Id);
+            entity.Property(j => j.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(j => j.DownloadToken).HasMaxLength(64);
+            entity.HasIndex(j => j.PublicId).IsUnique();
+            entity.HasIndex(j => new { j.TenantId, j.UserId, j.Status });
+        });
+
+        builder.Entity<DeletionOrchestrationJob>(entity =>
+        {
+            entity.ToTable("deletion_orchestration_jobs");
+            entity.HasKey(j => j.Id);
+            entity.Property(j => j.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(j => j.CurrentStep).HasConversion<string>().HasMaxLength(40);
+            entity.HasIndex(j => j.PublicId).IsUnique();
+            entity.HasIndex(j => new { j.TenantId, j.UserId, j.Status });
+        });
+
+        builder.Entity<RetentionJobRun>(entity =>
+        {
+            entity.ToTable("retention_job_runs");
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.JobType).HasMaxLength(100).IsRequired();
+            entity.Property(r => r.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(r => r.Summary).HasMaxLength(1000).IsRequired();
+            entity.HasIndex(r => r.PublicId).IsUnique();
+        });
+
+        builder.Entity<SubprocessorEntry>(entity =>
+        {
+            entity.ToTable("subprocessor_entries");
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Name).HasMaxLength(200).IsRequired();
+            entity.Property(s => s.Purpose).HasMaxLength(500).IsRequired();
+            entity.Property(s => s.DataProcessed).HasMaxLength(500).IsRequired();
+            entity.Property(s => s.Location).HasMaxLength(200).IsRequired();
+            entity.Property(s => s.ContractStatus).HasMaxLength(50).IsRequired();
+            entity.Property(s => s.DpaStatus).HasMaxLength(50).IsRequired();
+            entity.HasIndex(s => s.PublicId).IsUnique();
+            entity.HasIndex(s => s.DisplayOrder);
+        });
+
+        builder.Entity<AdminPrivacyQueueItem>(entity =>
+        {
+            entity.ToTable("admin_privacy_queue_items");
+            entity.HasKey(q => q.Id);
+            entity.Property(q => q.QueueStatus).HasConversion<string>().HasMaxLength(30);
+            entity.Property(q => q.AssignedOperator).HasMaxLength(200);
+            entity.Property(q => q.Notes).HasMaxLength(2000);
+            entity.HasIndex(q => q.PublicId).IsUnique();
+            entity.HasIndex(q => q.PrivacyRequestId).IsUnique();
         });
     }
 }

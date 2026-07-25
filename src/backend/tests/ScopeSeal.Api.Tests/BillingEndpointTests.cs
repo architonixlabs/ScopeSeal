@@ -292,7 +292,8 @@ public sealed class BillingEndpointTests(BillingPostgresWebApplicationFactory fa
             email,
             password = "SecurePass123!",
             displayName = "Billing Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 

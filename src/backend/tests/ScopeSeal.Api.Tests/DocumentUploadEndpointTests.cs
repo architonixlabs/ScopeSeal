@@ -235,7 +235,8 @@ public sealed class DocumentUploadEndpointTests(PostgresWebApplicationFactory fa
             email,
             password = "SecurePass1!",
             displayName = "Document Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 

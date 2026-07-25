@@ -62,12 +62,21 @@ public static class AuthEndpoints
             });
         }
 
+        if (!request.ConfirmedAge18OrAbove)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                ["confirmedAge18OrAbove"] = ["You must confirm that you are aged 18 or above to register."]
+            });
+        }
+
         var result = await registrationService.RegisterAsync(
             new RegisterRequest(
                 request.Email,
                 request.Password,
                 request.DisplayName,
-                request.TenantName),
+                request.TenantName,
+                request.ConfirmedAge18OrAbove),
             cancellationToken);
 
         if (!result.Succeeded)
@@ -153,7 +162,12 @@ public static class AuthEndpoints
         });
     }
 
-    private sealed record RegisterRequestDto(string Email, string Password, string DisplayName, string TenantName);
+    private sealed record RegisterRequestDto(
+        string Email,
+        string Password,
+        string DisplayName,
+        string TenantName,
+        bool ConfirmedAge18OrAbove);
 
     private sealed record LoginRequestDto(string Email, string Password);
 }

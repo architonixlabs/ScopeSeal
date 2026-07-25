@@ -178,7 +178,8 @@ public sealed class EntitlementEndpointTests(PostgresWebApplicationFactory facto
             email,
             password = "SecurePass1!",
             displayName = "Entitlement Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
 
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);

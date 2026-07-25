@@ -30,6 +30,7 @@
     <ProjectReference Include="..\ScopeSeal.ChangeLedger\ScopeSeal.ChangeLedger.csproj" />
     <ProjectReference Include="..\ScopeSeal.Extraction\ScopeSeal.Extraction.csproj" />
     <ProjectReference Include="..\ScopeSeal.Billing\ScopeSeal.Billing.csproj" />
+    <ProjectReference Include="..\ScopeSeal.Privacy\ScopeSeal.Privacy.csproj" />
     <ProjectReference Include="..\ScopeSeal.Shared\ScopeSeal.Shared.csproj" />
   </ItemGroup>
 

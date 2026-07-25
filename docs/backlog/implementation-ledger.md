@@ -28,7 +28,7 @@
 | 7 | Review and approval | **Complete** | Invitations, external review, comments, approval hash, immutability |
 | 8 | Change Ledger | **Complete** | Change requests, impacts, clone-to-draft, diff API, reapproval superseding |
 | 9 | AI extraction | **Complete** | Provider abstraction, job pipeline, draft facts, provenance, ManualOnly default |
-| 10 | Razorpay integration | Placeholder | Test mode only |
+| 10 | Razorpay integration | **Complete** | Test-mode IPaymentGateway, checkout, webhooks, entitlement reconciliation |
 | 11 | Privacy centre | Placeholder | |
 | 12 | Administration and support | Placeholder | |
 | 13 | Hardening | Placeholder | |
@@ -61,6 +61,7 @@
 | Review and approval (invitations, external review, approval hash) | **Complete** — Loop 7 |
 | Change Ledger (change requests, version diff, reapproval) | **Complete** — Loop 8 |
 | AI extraction (provider abstraction, job pipeline, draft facts) | **Complete** — Loop 9 |
+| Razorpay web billing (IPaymentGateway, webhooks, reconciliation) | **Complete** — Loop 10 |
 | Audit events (IAuditService foundation) | **Complete** — Loop 4–5 |
 | Worker host | Partially implemented — extraction job polling; preview jobs deferred |
 | Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
@@ -71,8 +72,8 @@
 
 ## Last Updated
 
-2026-07-25 — Loop 9 completion
+2026-07-25 — Loop 10 completion
 
 ## Recommended Next Loop
 
-**Loop 10: Razorpay integration** — test-mode checkout, webhook verification, entitlement reconciliation.
+**Loop 11: Privacy centre** — data export, erasure workflows, consent records, grievance tracking.

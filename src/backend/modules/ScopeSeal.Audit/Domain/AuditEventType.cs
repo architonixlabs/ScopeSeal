@@ -29,5 +29,10 @@ public enum AuditEventType
     ExtractionRunCompleted = 24,
     ExtractionRunFailed = 25,
     ExtractionFactReviewed = 26,
-    ExtractionFactsApplied = 27
+    ExtractionFactsApplied = 27,
+    BillingCheckoutCreated = 28,
+    BillingPaymentVerified = 29,
+    BillingWebhookProcessed = 30,
+    BillingEntitlementGranted = 31,
+    BillingSubscriptionCancelled = 32
 }

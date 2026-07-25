@@ -13,6 +13,7 @@ using ScopeSeal.Documents.Services;
 using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Billing.Services;
 using ScopeSeal.Extraction.Services;
+using ScopeSeal.Administration.Services;
 using ScopeSeal.Privacy.Services;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Identity.Services;
@@ -105,6 +106,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IProcessingJobProcessor, ProcessingJobProcessor>();
         services.AddScoped<IBillingService, BillingService>();
         services.AddScoped<IPrivacyService, PrivacyService>();
+        services.AddScoped<IAdministrationService, AdministrationService>();
         services.AddSingleton<PaymentGatewayFactory>();
         services.AddSingleton<LocalTestPaymentGateway>();
         services.AddSingleton<RazorpayPaymentGateway>();
@@ -133,6 +135,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<PlanCatalogSeeder>();
         services.AddScoped<WorkspaceTemplateSeeder>();
         services.AddScoped<PrivacyRegisterSeeder>();
+        services.AddScoped<AdminPlatformSeeder>();
 
         return services;
     }
@@ -154,6 +157,9 @@ public static class InfrastructureServiceCollectionExtensions
 
             var privacySeeder = scope.ServiceProvider.GetRequiredService<PrivacyRegisterSeeder>();
             await privacySeeder.SeedAsync(cancellationToken);
+
+            var adminSeeder = scope.ServiceProvider.GetRequiredService<AdminPlatformSeeder>();
+            await adminSeeder.SeedAsync(cancellationToken);
         }
         finally
         {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ScopeSeal.Administration.Domain;
 using ScopeSeal.AgreementSnapshots.Domain;
 using ScopeSeal.Approvals.Domain;
 using ScopeSeal.Audit.Domain;
@@ -120,6 +121,14 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<SubprocessorEntry> SubprocessorEntries => Set<SubprocessorEntry>();
 
     public DbSet<AdminPrivacyQueueItem> AdminPrivacyQueueItems => Set<AdminPrivacyQueueItem>();
+
+    public DbSet<PlatformFeatureFlag> PlatformFeatureFlags => Set<PlatformFeatureFlag>();
+
+    public DbSet<TermsNoticeVersion> TermsNoticeVersions => Set<TermsNoticeVersion>();
+
+    public DbSet<SupportAccessGrant> SupportAccessGrants => Set<SupportAccessGrant>();
+
+    public DbSet<DeadLetterJob> DeadLetterJobs => Set<DeadLetterJob>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -761,6 +770,49 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.Property(q => q.Notes).HasMaxLength(2000);
             entity.HasIndex(q => q.PublicId).IsUnique();
             entity.HasIndex(q => q.PrivacyRequestId).IsUnique();
+        });
+
+        builder.Entity<PlatformFeatureFlag>(entity =>
+        {
+            entity.ToTable("platform_feature_flags");
+            entity.HasKey(f => f.Id);
+            entity.Property(f => f.Key).HasMaxLength(100).IsRequired();
+            entity.Property(f => f.Description).HasMaxLength(500).IsRequired();
+            entity.HasIndex(f => f.Key).IsUnique();
+        });
+
+        builder.Entity<TermsNoticeVersion>(entity =>
+        {
+            entity.ToTable("terms_notice_versions");
+            entity.HasKey(n => n.Id);
+            entity.Property(n => n.Version).HasMaxLength(20).IsRequired();
+            entity.Property(n => n.Title).HasMaxLength(200).IsRequired();
+            entity.Property(n => n.Summary).HasMaxLength(4000).IsRequired();
+            entity.HasIndex(n => n.PublicId).IsUnique();
+            entity.HasIndex(n => n.IsCurrent);
+        });
+
+        builder.Entity<SupportAccessGrant>(entity =>
+        {
+            entity.ToTable("support_access_grants");
+            entity.HasKey(g => g.Id);
+            entity.Property(g => g.OperatorReference).HasMaxLength(200).IsRequired();
+            entity.Property(g => g.Reason).HasMaxLength(1000).IsRequired();
+            entity.Property(g => g.Scope).HasConversion<string>().HasMaxLength(30);
+            entity.HasIndex(g => g.PublicId).IsUnique();
+            entity.HasIndex(g => new { g.TenantId, g.ExpiresAtUtc });
+        });
+
+        builder.Entity<DeadLetterJob>(entity =>
+        {
+            entity.ToTable("dead_letter_jobs");
+            entity.HasKey(j => j.Id);
+            entity.Property(j => j.JobCategory).HasMaxLength(64).IsRequired();
+            entity.Property(j => j.ErrorMessage).HasMaxLength(2000).IsRequired();
+            entity.Property(j => j.Status).HasConversion<string>().HasMaxLength(30);
+            entity.HasIndex(j => j.PublicId).IsUnique();
+            entity.HasIndex(j => j.SourceJobPublicId).IsUnique();
+            entity.HasIndex(j => new { j.Status, j.FailedAtUtc });
         });
     }
 }

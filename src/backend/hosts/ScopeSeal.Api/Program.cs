@@ -14,6 +14,7 @@ using ScopeSeal.Entitlements.DependencyInjection;
 using ScopeSeal.Extraction.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Infrastructure.DependencyInjection;
+using ScopeSeal.Administration.DependencyInjection;
 using ScopeSeal.Privacy.DependencyInjection;
 using ScopeSeal.Shared.DependencyInjection;
 using ScopeSeal.Tenancy;
@@ -45,6 +46,7 @@ builder.Services.AddChangeLedgerModule();
 builder.Services.AddExtractionModule();
 builder.Services.AddBillingModule(builder.Configuration);
 builder.Services.AddPrivacyModule(builder.Configuration);
+builder.Services.AddAdministrationModule(builder.Configuration);
 builder.Services.AddAuditModule();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
@@ -156,6 +158,7 @@ app.MapBillingEndpoints();
 app.MapRazorpayWebhookEndpoints();
 app.MapPrivacyEndpoints();
 app.MapAdminPrivacyEndpoints();
+app.MapAdminEndpoints();
 
 app.Run();
 

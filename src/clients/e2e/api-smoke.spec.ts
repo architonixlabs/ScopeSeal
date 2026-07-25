@@ -41,7 +41,7 @@ test.describe('API smoke flows', () => {
     const { email } = await registerAndLogin(request, suffix);
     const me = await request.get(`${apiBaseUrl}/api/v1/auth/me`);
     const body = await me.json();
-    expect(body.user.email).toBe(email);
+    expect(body.email).toBe(email);
   });
 
   test('workspace create and list succeed', async ({ request }) => {

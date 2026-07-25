@@ -17,7 +17,7 @@ const marketingPaths = [
 for (const path of marketingPaths) {
   test(`marketing page loads: ${path}`, async ({ page, baseURL }) => {
     await page.goto(`${baseURL}${path}`, { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('article h1')).toBeVisible();
     await expect(page.getByText(/requires qualified legal review/i)).toBeVisible();
   });
 }

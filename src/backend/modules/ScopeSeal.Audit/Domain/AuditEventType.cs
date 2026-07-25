@@ -34,5 +34,11 @@ public enum AuditEventType
     BillingPaymentVerified = 29,
     BillingWebhookProcessed = 30,
     BillingEntitlementGranted = 31,
-    BillingSubscriptionCancelled = 32
+    BillingSubscriptionCancelled = 32,
+    PrivacyConsentRecorded = 33,
+    PrivacyConsentWithdrawn = 34,
+    PrivacyRequestSubmitted = 35,
+    PrivacyExportJobCreated = 36,
+    PrivacyDeletionJobScheduled = 37,
+    PrivacyGrievanceSubmitted = 38
 }

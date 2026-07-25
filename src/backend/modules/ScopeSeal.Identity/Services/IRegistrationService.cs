@@ -6,7 +6,8 @@ public sealed record RegisterRequest(
     string Email,
     string Password,
     string DisplayName,
-    string TenantName);
+    string TenantName,
+    bool ConfirmedAge18OrAbove);
 
 public interface IRegistrationService
 {

@@ -26,7 +26,8 @@ public sealed class AuthEndpointTests(PostgresWebApplicationFactory factory) : I
             email,
             password = "SecurePass1!",
             displayName = "Test User",
-            tenantName = $"Tenant {suffix}"
+            tenantName = $"Tenant {suffix}",
+            confirmedAge18OrAbove = true
         });
 
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);

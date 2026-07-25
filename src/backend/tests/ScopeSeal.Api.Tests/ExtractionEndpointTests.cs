@@ -225,7 +225,8 @@ public sealed class ExtractionEndpointTests(ExtractionPostgresWebApplicationFact
             email,
             password = "SecurePass1!",
             displayName = "Extraction Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 

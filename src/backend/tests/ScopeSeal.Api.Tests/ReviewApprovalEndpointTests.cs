@@ -277,7 +277,8 @@ public sealed class ReviewApprovalEndpointTests(PostgresWebApplicationFactory fa
             email,
             password = "SecurePass1!",
             displayName = "Review Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 

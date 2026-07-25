@@ -348,7 +348,8 @@ public sealed class ChangeLedgerEndpointTests(ChangeLedgerPostgresWebApplication
             email,
             password = "SecurePass1!",
             displayName = "Change Ledger Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 

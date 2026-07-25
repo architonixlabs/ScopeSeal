@@ -9,4 +9,8 @@ public sealed class ApplicationUser : IdentityUser<Guid>
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
     public bool RequiresEmailVerification { get; set; } = true;
+
+    public bool ConfirmedAge18OrAbove { get; set; }
+
+    public DateTime? AgeDeclaredAtUtc { get; set; }
 }

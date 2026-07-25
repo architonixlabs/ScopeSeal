@@ -50,7 +50,8 @@ public sealed class TenantIsolationTests(PostgresWebApplicationFactory factory) 
             email,
             password = "SecurePass1!",
             displayName = "Isolation Test User",
-            tenantName
+            tenantName,
+            confirmedAge18OrAbove = true
         });
 
         registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);

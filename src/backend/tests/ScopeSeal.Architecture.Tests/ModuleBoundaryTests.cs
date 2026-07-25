@@ -12,7 +12,7 @@ using ScopeSeal.Entitlements.DependencyInjection;
 using ScopeSeal.Extraction.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Notifications;
-using ScopeSeal.Privacy;
+using ScopeSeal.Privacy.DependencyInjection;
 using ScopeSeal.Shared.Abstractions;
 using ScopeSeal.Tenancy;
 using ScopeSeal.Workspaces.DependencyInjection;

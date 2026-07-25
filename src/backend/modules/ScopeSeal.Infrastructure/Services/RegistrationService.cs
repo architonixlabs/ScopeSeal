@@ -21,6 +21,15 @@ public sealed class RegistrationService(
         RegisterRequest request,
         CancellationToken cancellationToken = default)
     {
+        if (!request.ConfirmedAge18OrAbove)
+        {
+            return IdentityResult.Failed(new IdentityError
+            {
+                Code = "AgeRequirementNotMet",
+                Description = "ScopeSeal is available only to users aged 18 or above."
+            });
+        }
+
         var user = new ApplicationUser
         {
             Id = Guid.NewGuid(),
@@ -28,7 +37,9 @@ public sealed class RegistrationService(
             Email = request.Email.Trim().ToLowerInvariant(),
             DisplayName = request.DisplayName.Trim(),
             RequiresEmailVerification = options.Value.Auth.RequireEmailVerification,
-            EmailConfirmed = !options.Value.Auth.RequireEmailVerification
+            EmailConfirmed = !options.Value.Auth.RequireEmailVerification,
+            ConfirmedAge18OrAbove = true,
+            AgeDeclaredAtUtc = DateTime.UtcNow
         };
 
         var createResult = await userManager.CreateAsync(user, request.Password);

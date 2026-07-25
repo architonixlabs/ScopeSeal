@@ -106,7 +106,10 @@ test.describe('API smoke flows', () => {
     const complete = await request.post(
       `${apiBaseUrl}/api/v1/tenants/${tenantPublicId}/workspaces/${workspacePublicId}/upload-sessions/${sessionPublicId}/complete`,
     );
-    expect(complete.status()).toBe(200);
+    if (complete.status() !== 200) {
+      const body = await complete.text();
+      throw new Error(`Upload complete failed: ${complete.status()} ${body}`);
+    }
     const completeBody = await complete.json();
     expect(completeBody.document.publicId).toBeTruthy();
   });

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\ScopeSeal.AgreementSnapshots\ScopeSeal.AgreementSnapshots.csproj" />
     <ProjectReference Include="..\ScopeSeal.Shared\ScopeSeal.Shared.csproj" />
   </ItemGroup>
 

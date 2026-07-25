@@ -11,11 +11,13 @@ using ScopeSeal.Audit.Services;
 using ScopeSeal.ChangeLedger.Services;
 using ScopeSeal.Documents.Services;
 using ScopeSeal.Entitlements.Services;
+using ScopeSeal.Extraction.Services;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Identity.Services;
 using ScopeSeal.Infrastructure.Persistence;
 using ScopeSeal.Infrastructure.Security;
 using ScopeSeal.Infrastructure.Services;
+using ScopeSeal.Infrastructure.Services.Providers;
 using ScopeSeal.Infrastructure.Storage;
 using ScopeSeal.Shared.Configuration;
 using ScopeSeal.Tenancy.Services;
@@ -97,6 +99,13 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IAgreementSnapshotService, AgreementSnapshotService>();
         services.AddScoped<IReviewApprovalService, ReviewApprovalService>();
         services.AddScoped<IChangeLedgerService, ChangeLedgerService>();
+        services.AddScoped<IExtractionService, ExtractionService>();
+        services.AddScoped<IProcessingJobProcessor, ProcessingJobProcessor>();
+        services.AddSingleton<IExtractionSchemaValidator, ExtractionSchemaValidator>();
+        services.AddSingleton<AiExtractionProviderFactory>();
+        services.AddSingleton<ManualOnlyExtractionProvider>();
+        services.AddSingleton<LocalProcessingExtractionProvider>();
+        services.AddSingleton<ApprovedExternalProviderExtractionProvider>();
         services.AddSingleton<IContentTypeValidator, ContentTypeValidator>();
         services.AddSingleton<IMalwareScanner, DevelopmentMalwareScanner>();
 

@@ -7,6 +7,7 @@ using ScopeSeal.Audit.Domain;
 using ScopeSeal.ChangeLedger.Domain;
 using ScopeSeal.Documents.Domain;
 using ScopeSeal.Entitlements.Domain;
+using ScopeSeal.Extraction.Domain;
 using ScopeSeal.Identity.Domain;
 using ScopeSeal.Tenancy.Domain;
 using ScopeSeal.Workspaces.Domain;
@@ -91,6 +92,10 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
     public DbSet<ChangeImpact> ChangeImpacts => Set<ChangeImpact>();
 
     public DbSet<ChangeDecision> ChangeDecisions => Set<ChangeDecision>();
+
+    public DbSet<ExtractionRun> ExtractionRuns => Set<ExtractionRun>();
+
+    public DbSet<ExtractedFact> ExtractedFacts => Set<ExtractedFact>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -525,6 +530,39 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Id
             entity.HasOne(d => d.ChangeRequest)
                 .WithMany(r => r.Decisions)
                 .HasForeignKey(d => d.ChangeRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ExtractionRun>(entity =>
+        {
+            entity.ToTable("extraction_runs");
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.AiMode).HasMaxLength(64).IsRequired();
+            entity.Property(r => r.ErrorMessage).HasMaxLength(2000);
+            entity.Property(r => r.Status).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(r => r.PublicId).IsUnique();
+            entity.HasIndex(r => new { r.TenantId, r.WorkspaceId, r.Status });
+            entity.HasIndex(r => r.ProcessingJobId).IsUnique();
+        });
+
+        builder.Entity<ExtractedFact>(entity =>
+        {
+            entity.ToTable("extracted_facts");
+            entity.HasKey(f => f.Id);
+            entity.Property(f => f.Title).HasMaxLength(500).IsRequired();
+            entity.Property(f => f.Description).HasMaxLength(4000);
+            entity.Property(f => f.CurrencyCode).HasMaxLength(3);
+            entity.Property(f => f.SourceDocumentName).HasMaxLength(260).IsRequired();
+            entity.Property(f => f.SourceHashValue).HasMaxLength(128).IsRequired();
+            entity.Property(f => f.SourceExcerpt).HasMaxLength(2000);
+            entity.Property(f => f.SectionType).HasConversion<string>().HasMaxLength(32);
+            entity.Property(f => f.ReviewStatus).HasConversion<string>().HasMaxLength(32);
+            entity.Property(f => f.ConfidenceScore).HasPrecision(5, 4);
+            entity.HasIndex(f => f.PublicId).IsUnique();
+            entity.HasIndex(f => new { f.TenantId, f.ExtractionRunId, f.ReviewStatus });
+            entity.HasOne(f => f.ExtractionRun)
+                .WithMany(r => r.Facts)
+                .HasForeignKey(f => f.ExtractionRunId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

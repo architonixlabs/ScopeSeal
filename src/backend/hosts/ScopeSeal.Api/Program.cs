@@ -7,6 +7,7 @@ using ScopeSeal.Api.Middleware;
 using ScopeSeal.AgreementSnapshots.DependencyInjection;
 using ScopeSeal.Approvals.DependencyInjection;
 using ScopeSeal.Audit.DependencyInjection;
+using ScopeSeal.ChangeLedger.DependencyInjection;
 using ScopeSeal.Documents.DependencyInjection;
 using ScopeSeal.Entitlements.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
@@ -37,6 +38,7 @@ builder.Services.AddWorkspacesModule();
 builder.Services.AddDocumentsModule();
 builder.Services.AddAgreementSnapshotsModule();
 builder.Services.AddApprovalsModule();
+builder.Services.AddChangeLedgerModule();
 builder.Services.AddAuditModule();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
@@ -142,6 +144,7 @@ app.MapDocumentEndpoints();
 app.MapAgreementSnapshotEndpoints();
 app.MapReviewApprovalEndpoints();
 app.MapExternalReviewEndpoints();
+app.MapChangeLedgerEndpoints();
 
 app.Run();
 

@@ -133,6 +133,19 @@ public sealed class ReviewApprovalService(
             return (null, "A valid reviewer email is required.");
         }
 
+        try
+        {
+            await entitlementService.RecordUsageAsync(
+                tenantId,
+                UsageMetric.ExternalInvitationsSentThisMonth,
+                increment: 1,
+                cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return (null, ex.Message);
+        }
+
         var expirationDays = request.ExpirationDays is > 0 and <= 30
             ? request.ExpirationDays.Value
             : DefaultInvitationExpirationDays;
@@ -155,12 +168,6 @@ public sealed class ReviewApprovalService(
 
         dbContext.ReviewInvitations.Add(invitation);
         await dbContext.SaveChangesAsync(cancellationToken);
-
-        await entitlementService.RecordUsageAsync(
-            tenantId,
-            UsageMetric.ExternalInvitationsSentThisMonth,
-            increment: 1,
-            cancellationToken);
 
         await auditService.RecordAsync(
             tenantId,
@@ -562,6 +569,30 @@ public sealed class ReviewApprovalService(
         snapshot.CanonicalHashSha256 = canonicalHash;
         snapshot.ApprovedAtUtc = now;
         snapshot.UpdatedAtUtc = now;
+
+        if (snapshot.SourceSnapshotId is not null)
+        {
+            var sourceSnapshot = await dbContext.AgreementSnapshots
+                .SingleOrDefaultAsync(
+                    s => s.TenantId == invitation.TenantId && s.Id == snapshot.SourceSnapshotId,
+                    cancellationToken);
+
+            if (sourceSnapshot is not null && sourceSnapshot.Status == SnapshotStatus.Approved)
+            {
+                sourceSnapshot.Status = SnapshotStatus.Superseded;
+                sourceSnapshot.UpdatedAtUtc = now;
+            }
+        }
+
+        if (snapshot.ChangeRequestId is not null)
+        {
+            await ChangeLedgerService.MarkChangeRequestImplementedAsync(
+                dbContext,
+                auditService,
+                invitation.TenantId,
+                snapshot.ChangeRequestId.Value,
+                cancellationToken);
+        }
 
         dbContext.ApprovalRecords.Add(approval);
         await dbContext.SaveChangesAsync(cancellationToken);

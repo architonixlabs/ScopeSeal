@@ -12,37 +12,46 @@ public sealed class PlanCatalogSeeder(
     ApplicationDbContext dbContext,
     IOptions<PlansOptions> plansOptions)
 {
+    private static readonly SemaphoreSlim SeedLock = new(1, 1);
+
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var planCode in Enum.GetValues<PlanCode>())
-        {
-            var definition = plansOptions.Value.GetDefinition(planCode);
-            var existing = await dbContext.PlanVersions
-                .Where(v => v.PlanCode == planCode && v.Version == definition.Version)
-                .SingleOrDefaultAsync(cancellationToken);
-
-            var limitsJson = PlanLimitsSnapshot.FromDefinition(definition).ToJson();
-            if (existing is not null)
-            {
-                if (!string.Equals(existing.LimitsJson, limitsJson, StringComparison.Ordinal))
-                {
-                    existing.EffectiveToUtc = DateTime.UtcNow;
-                    dbContext.PlanVersions.Add(CreatePlanVersion(planCode, definition, limitsJson));
-                }
-
-                continue;
-            }
-
-            dbContext.PlanVersions.Add(CreatePlanVersion(planCode, definition, limitsJson));
-        }
-
+        await SeedLock.WaitAsync(cancellationToken);
         try
         {
-            await dbContext.SaveChangesAsync(cancellationToken);
+            foreach (var planCode in Enum.GetValues<PlanCode>())
+            {
+                var definition = plansOptions.Value.GetDefinition(planCode);
+                var existing = await dbContext.PlanVersions
+                    .Where(v => v.PlanCode == planCode && v.Version == definition.Version)
+                    .SingleOrDefaultAsync(cancellationToken);
+
+                var limitsJson = PlanLimitsSnapshot.FromDefinition(definition).ToJson();
+                if (existing is not null)
+                {
+                    if (!string.Equals(existing.LimitsJson, limitsJson, StringComparison.Ordinal))
+                    {
+                        existing.LimitsJson = limitsJson;
+                    }
+
+                    continue;
+                }
+
+                dbContext.PlanVersions.Add(CreatePlanVersion(planCode, definition, limitsJson));
+            }
+
+            try
+            {
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+            {
+                dbContext.ChangeTracker.Clear();
+            }
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        finally
         {
-            dbContext.ChangeTracker.Clear();
+            SeedLock.Release();
         }
     }
 

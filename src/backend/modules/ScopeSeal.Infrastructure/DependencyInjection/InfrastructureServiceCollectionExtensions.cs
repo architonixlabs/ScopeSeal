@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using ScopeSeal.AgreementSnapshots.Services;
 using ScopeSeal.Approvals.Services;
 using ScopeSeal.Audit.Services;
+using ScopeSeal.ChangeLedger.Services;
 using ScopeSeal.Documents.Services;
 using ScopeSeal.Entitlements.Services;
 using ScopeSeal.Identity.Domain;
@@ -95,6 +96,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IAgreementSnapshotService, AgreementSnapshotService>();
         services.AddScoped<IReviewApprovalService, ReviewApprovalService>();
+        services.AddScoped<IChangeLedgerService, ChangeLedgerService>();
         services.AddSingleton<IContentTypeValidator, ContentTypeValidator>();
         services.AddSingleton<IMalwareScanner, DevelopmentMalwareScanner>();
 

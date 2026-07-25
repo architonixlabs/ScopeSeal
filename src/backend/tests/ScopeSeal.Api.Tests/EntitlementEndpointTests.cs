@@ -11,6 +11,7 @@ using ScopeSeal.Tenancy.Services;
 
 namespace ScopeSeal.Api.Tests;
 
+[Collection("PostgresIntegration")]
 public sealed class EntitlementEndpointTests(PostgresWebApplicationFactory factory) : IClassFixture<PostgresWebApplicationFactory>
 {
     [Fact]

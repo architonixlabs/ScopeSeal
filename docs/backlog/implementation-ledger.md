@@ -32,7 +32,7 @@
 | 11 | Privacy centre | **Complete** | Notice versioning, consent, requests, export/deletion foundations, subprocessor API |
 | 12 | Administration and support | **Complete** | Admin API, operator portal shell, metadata-only support access |
 | 13 | Hardening | **Complete** | Security headers, rate limits, OTel wiring, security tests, a11y CI foundations |
-| 14 | Launch readiness | Placeholder | |
+| 14 | Launch readiness | **Complete** | Capacitor shells, platform adapters, Playwright smoke, mobile CI, deployment docs |
 
 ## Repository Scaffold Status
 
@@ -49,34 +49,36 @@
 | `.cursor/rules/` | Complete |
 | Root README, SECURITY, CONTRIBUTING | Complete |
 | `.editorconfig`, `.env.example` | Complete |
-| Backend solution (`src/backend/ScopeSeal.slnx`) | **Complete** — Loop 1 |
-| Modular domain projects (14 modules + Shared) | **Complete** — markers/DI stubs |
-| Infrastructure module (`ScopeSeal.Infrastructure`) | **Complete** — Loop 2 |
-| API host (health, OpenAPI, logging, config validation) | **Complete** — Loop 1 |
-| Identity & tenancy (EF, auth endpoints, policies) | **Complete** — Loop 2 |
-| Plans & entitlements (IEntitlementService, plan catalog) | **Complete** — Loop 3 |
-| Workspaces & contacts (CRUD, parties, templates, dashboard) | **Complete** — Loop 4 |
-| Secure document upload (sessions, blob storage, validation, scan) | **Complete** — Loop 5 |
-| Manual Agreement Snapshot (draft editor API, sections, concurrency) | **Complete** — Loop 6 |
-| Review and approval (invitations, external review, approval hash) | **Complete** — Loop 7 |
-| Change Ledger (change requests, version diff, reapproval) | **Complete** — Loop 8 |
-| AI extraction (provider abstraction, job pipeline, draft facts) | **Complete** — Loop 9 |
-| Razorpay web billing (IPaymentGateway, webhooks, reconciliation) | **Complete** — Loop 10 |
-| Privacy centre (consent, requests, export/deletion foundations) | **Complete** — Loop 11 |
-| Administration and support (admin API, operator portal shell) | **Complete** — Loop 12 |
-| Security hardening (headers, rate limits, OTel, security tests) | **Complete** — Loop 13 |
-| Audit events (IAuditService foundation) | **Complete** — Loop 4–5 |
+| Backend solution (`src/backend/ScopeSeal.slnx`) | **Complete** |
+| Modular domain projects (14 modules + Shared) | **Complete** |
+| Infrastructure module (`ScopeSeal.Infrastructure`) | **Complete** |
+| API host | **Complete** |
+| Identity & tenancy | **Complete** |
+| Plans & entitlements | **Complete** |
+| Workspaces & contacts | **Complete** |
+| Secure document upload | **Complete** |
+| Manual Agreement Snapshot | **Complete** |
+| Review and approval | **Complete** |
+| Change Ledger | **Complete** |
+| AI extraction | **Complete** |
+| Razorpay web billing | **Complete** |
+| Privacy centre | **Complete** |
+| Administration and support | **Complete** |
+| Security hardening | **Complete** |
+| Launch readiness (mobile, E2E, deployment) | **Complete** — Loop 14 |
+| Audit events (IAuditService foundation) | **Complete** |
 | Worker host | Partially implemented — extraction job polling; preview jobs deferred |
-| Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** — Loop 1 shells |
-| CI pipeline (backend, clients, security) | **Complete** — Loop 1 |
+| Frontend workspace (product, marketing SSR, admin, shared libs) | **Complete** |
+| CI pipeline (backend, clients, security, e2e) | **Complete** |
 | Docker dev environment | **Complete** — PostgreSQL + Azurite |
-| Capacitor Android/iOS shells | Not started — Loop 2+ |
+| Capacitor Android/iOS shells | **Complete** — Loop 14 foundation |
 | OpenTelemetry export | **Complete** — opt-in OTLP/console via Loop 13 config |
+| Playwright E2E smoke | **Complete** — Loop 14 |
 
 ## Last Updated
 
-2026-07-25 — Loop 13 completion
+2026-07-25 — Loop 14 completion (final autonomous delivery loop)
 
 ## Recommended Next Loop
 
-**Loop 14: Launch readiness** — mobile shells, E2E Playwright, performance budgets, production config review.
+**Post-autonomous:** Staging activation and product UI implementation — human-operated per founder activation checklist. No Loop 15 defined in original backlog.

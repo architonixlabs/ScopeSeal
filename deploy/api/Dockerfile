@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
+COPY Directory.Build.props ./
 COPY ScopeSeal.slnx ./
 COPY hosts/ScopeSeal.Api/ScopeSeal.Api.csproj hosts/ScopeSeal.Api/
 COPY modules/ScopeSeal.Shared/ScopeSeal.Shared.csproj modules/ScopeSeal.Shared/

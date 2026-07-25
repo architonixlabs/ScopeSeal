@@ -4,7 +4,7 @@ using Testcontainers.PostgreSql;
 
 namespace ScopeSeal.Api.Tests;
 
-public class PostgresWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public sealed class SecurityRateLimitWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private PostgreSqlContainer? _container;
 
@@ -46,6 +46,7 @@ public class PostgresWebApplicationFactory : WebApplicationFactory<Program>, IAs
         builder.UseSetting("ConnectionStrings:Default", ConnectionString);
         builder.UseSetting("ScopeSeal:Auth:JwtSecret", "test-secret-minimum-32-characters-long");
         builder.UseSetting("ScopeSeal:Auth:RequireEmailVerification", "false");
-        builder.UseSetting("ScopeSeal:Security:RateLimit:AuthPermitLimit", "100000");
+        builder.UseSetting("ScopeSeal:Security:RateLimit:AuthPermitLimit", "5");
+        builder.UseSetting("ScopeSeal:Security:RateLimit:AuthWindowSeconds", "60");
     }
 }

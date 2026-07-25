@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.RateLimiting;
+using ScopeSeal.Api.DependencyInjection;
 using ScopeSeal.Billing.Domain;
 using ScopeSeal.Billing.Services;
 using ScopeSeal.Entitlements.Domain;
@@ -44,6 +46,7 @@ public static class BillingEndpoints
     public static IEndpointRouteBuilder MapRazorpayWebhookEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPost("/api/v1/webhooks/razorpay", ProcessWebhookAsync)
+            .RequireRateLimiting(RateLimitingExtensions.WebhookPolicy)
             .WithName("RazorpayWebhook")
             .AllowAnonymous()
             .DisableAntiforgery()

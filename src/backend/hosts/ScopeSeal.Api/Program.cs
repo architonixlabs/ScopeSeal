@@ -1,8 +1,12 @@
 using System.Diagnostics;
+using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using ScopeSeal.Api.DependencyInjection;
 using ScopeSeal.Api.Endpoints;
+using ScopeSeal.Api.Logging;
 using ScopeSeal.Api.Middleware;
 using ScopeSeal.AgreementSnapshots.DependencyInjection;
 using ScopeSeal.Approvals.DependencyInjection;
@@ -32,9 +36,12 @@ builder.Host.UseSerilog((context, services, configuration) =>
         .Enrich.FromLogContext()
         .Enrich.WithEnvironmentName()
         .Enrich.WithThreadId()
+        .Filter.With<SensitiveDataLogFilter>()
         .WriteTo.Console());
 
 builder.Services.AddScopeSealShared(builder.Configuration);
+builder.Services.AddScopeSealRateLimiting();
+builder.Services.AddScopeSealOpenTelemetry(builder.Configuration);
 builder.Services.AddIdentityModule();
 builder.Services.AddTenancyModule();
 builder.Services.AddEntitlementsModule(builder.Configuration);
@@ -60,6 +67,12 @@ builder.Services.AddScopeSealInfrastructure(connectionString, builder.Environmen
 builder.Services.AddProblemDetails();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
+    options.SerializerOptions.Encoder = JavaScriptEncoder.Default;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.Encoder = JavaScriptEncoder.Default;
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 builder.Services.AddOpenApi(options =>
@@ -90,9 +103,18 @@ app.UseSerilogRequestLogging(options =>
     {
         diagnosticContext.Set("CorrelationId", httpContext.TraceIdentifier);
     };
+    options.GetLevel = (httpContext, _, exception) =>
+        exception is not null || httpContext.Response.StatusCode >= 500
+            ? Serilog.Events.LogEventLevel.Error
+            : httpContext.Response.StatusCode >= 400
+                ? Serilog.Events.LogEventLevel.Warning
+                : Serilog.Events.LogEventLevel.Information;
 });
 
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
+app.UseRateLimiter();
 
 app.UseExceptionHandler(exceptionHandlerApp =>
 {

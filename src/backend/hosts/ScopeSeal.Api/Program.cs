@@ -161,6 +161,7 @@ app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.Health
 app.MapHealthChecks("/health");
 
 app.MapSystemEndpoints();
+app.MapPublicContactEndpoints();
 app.MapAuthEndpoints();
 app.MapTenantEndpoints();
 app.MapEntitlementEndpoints();

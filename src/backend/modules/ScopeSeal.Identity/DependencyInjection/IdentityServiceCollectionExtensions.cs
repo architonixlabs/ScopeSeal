@@ -42,7 +42,6 @@ public static class IdentityServiceCollectionExtensions
 
         services.AddScoped<IAuthorizationHandler, TenantRoleAuthorizationHandler>();
         services.TryAddScoped<ITenantContext, TenantContext>();
-        services.AddSingleton<IEmailVerificationService, DevelopmentEmailVerificationService>();
 
         return services;
     }

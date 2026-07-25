@@ -1,29 +1,98 @@
+# ScopeSeal — base (dev) stack on the Ubuntu deploy host (192.168.1.8).
+# Deploy via deploy.ps1 / deploy.sh (docker --context avalokh-ubuntu compose -p scopeseal-dev …).
+#
+# Dev DB: shared arx-dev-db Postgres (postgres:5432, db scopeseal, role scopeseal_app).
+# No container_name — dev and prod stacks coexist on one host.
+# Persistent bind-mounts live under /docker-data/scopeseal/ on the deploy host.
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: scopeseal-postgres
-    environment:
-      POSTGRES_DB: scopeseal
-      POSTGRES_USER: scopeseal
-      POSTGRES_PASSWORD: scopeseal_dev
-    ports:
-      - "5432:5432"
-    volumes:
-      - scopeseal_pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U scopeseal -d scopeseal"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite:3.34.0
-    container_name: scopeseal-azurite
-    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
-    ports:
-      - "10000:10000"
-      - "10001:10001"
-      - "10002:10002"
+    restart: unless-stopped
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data
+    volumes:
+      - ${AZURITE_DATA:-/docker-data/scopeseal/azurite}:/data
+    networks:
+      - internal
 
-volumes:
-  scopeseal_pgdata:
+  api:
+    build:
+      context: ./src/backend
+      dockerfile: ../../deploy/api/Dockerfile
+    image: scopeseal-api
+    restart: unless-stopped
+    env_file:
+      - ${ENV_FILE:-.env.dev}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__Default: Host=${DB_HOST:-postgres};Port=5432;Database=${DB_NAME:-scopeseal};Username=${DB_USER:-scopeseal_app};Password=${DB_PASSWORD:?set DB_PASSWORD in the env file}
+      ScopeSeal__Storage__Provider: Azurite
+      ScopeSeal__Storage__ConnectionString: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      ScopeSeal__Auth__JwtSecret: ${JWT_SECRET:?set JWT_SECRET in the env file}
+      ScopeSeal__Notifications__Email__Provider: ${ARXMAIL_PROVIDER:-ArxMail}
+      ScopeSeal__Notifications__Email__ArxMail__SubmitUrl: ${ARXMAIL_SUBMIT_URL:-https://mail.architonixlabs.com/v1/submit}
+      ScopeSeal__Notifications__Email__ArxMail__SecretKey: ${ARXMAIL_SECRET_KEY:-}
+      ScopeSeal__Notifications__Email__FromAddress: ${EMAIL_FROM:-noreply@scopeseal.app}
+    depends_on:
+      - azurite
+    ports:
+      - "8111:5000"
+    networks:
+      - internal
+      - arx-dev-db
+
+  worker:
+    build:
+      context: ./src/backend
+      dockerfile: ../../deploy/worker/Dockerfile
+    image: scopeseal-worker
+    restart: unless-stopped
+    env_file:
+      - ${ENV_FILE:-.env.dev}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__Default: Host=${DB_HOST:-postgres};Port=5432;Database=${DB_NAME:-scopeseal};Username=${DB_USER:-scopeseal_app};Password=${DB_PASSWORD:?set DB_PASSWORD in the env file}
+      ScopeSeal__Storage__Provider: Azurite
+      ScopeSeal__Storage__ConnectionString: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+    depends_on:
+      - azurite
+      - api
+    networks:
+      - internal
+      - arx-dev-db
+
+  marketing:
+    build:
+      context: ./src/clients
+      dockerfile: ../../deploy/clients/Dockerfile.marketing
+    image: scopeseal-marketing
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+    networks:
+      - internal
+
+  nginx:
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    image: scopeseal-nginx
+    restart: unless-stopped
+    depends_on:
+      - api
+      - marketing
+    ports:
+      - "8110:80"
+      - "8112:81"
+      - "8113:82"
+    volumes:
+      - /srv/weblogs/scopeseal:/var/log/nginx
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+  arx-dev-db:
+    external: true

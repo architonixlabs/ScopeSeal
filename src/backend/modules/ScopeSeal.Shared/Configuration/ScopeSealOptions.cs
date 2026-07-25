@@ -31,6 +31,9 @@ public sealed class ScopeSealOptions
 
     [Required]
     public SecurityOptions Security { get; init; } = new();
+
+    [Required]
+    public NotificationOptions Notifications { get; init; } = new();
 }
 
 public sealed class DocumentUploadOptions
@@ -90,4 +93,33 @@ public sealed class AiOptions
 
     [Range(1, 100)]
     public int MaxExtractionJobsPerBatch { get; init; } = 5;
+}
+
+public sealed class NotificationOptions
+{
+    [Required]
+    public EmailNotificationOptions Email { get; init; } = new();
+}
+
+public sealed class EmailNotificationOptions
+{
+    [Required]
+    [RegularExpression("^(Development|ArxMail)$")]
+    public string Provider { get; init; } = "Development";
+
+    [Required]
+    [EmailAddress]
+    public string FromAddress { get; init; } = "noreply@scopeseal.app";
+
+    [Required]
+    public ArxMailOptions ArxMail { get; init; } = new();
+}
+
+public sealed class ArxMailOptions
+{
+    [Required]
+    [Url]
+    public string SubmitUrl { get; init; } = "https://mail.architonixlabs.com/v1/submit";
+
+    public string SecretKey { get; init; } = string.Empty;
 }

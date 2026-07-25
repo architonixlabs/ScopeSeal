@@ -1,5 +1,9 @@
-# Local Windows isolated dev infrastructure (PostgreSQL + Azurite).
-# See docker-compose.local.yml at repo root — kept here for discoverability.
+# Local Windows / isolated dev infrastructure only (PostgreSQL + Azurite).
+# The API and Angular apps run on the host via start.bat — not in this compose file.
+#
+#   docker compose -f docker-compose.local.yml up -d
+#
+# Deploy-host stacks use docker-compose.yml (+ prod overlay) via deploy.ps1 / deploy.sh.
 services:
   postgres:
     profiles: ["local"]

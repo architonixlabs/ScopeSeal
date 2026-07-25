@@ -29,6 +29,16 @@ ScopeSeal is a communication-clarity and scope-organisation utility — not lega
 
 ## Local development
 
+### Quick start (Windows)
+
+From the repository root, double-click or run:
+
+```cmd
+start.bat
+```
+
+This starts Docker dependencies (when Docker is available), the API, and the product Angular app in separate console windows.
+
 ### Prerequisites
 
 - .NET 10 SDK
@@ -38,7 +48,20 @@ ScopeSeal is a communication-clarity and scope-organisation utility — not lega
 ### Start infrastructure
 
 ```powershell
-docker compose up -d
+docker compose -f docker-compose.local.yml --profile local up -d
+```
+
+### Deploy to Ubuntu (192.168.1.8)
+
+Remote dev/prod Docker deployment uses the shared `arx-dev-db` Postgres, ArxMail Gateway,
+GoAccess log mounts, and `/docker-data/scopeseal/` persistent storage. See
+[docs/deployment/ubuntu.md](docs/deployment/ubuntu.md).
+
+```powershell
+copy deploy\remote.conf.example deploy\remote.conf
+copy .env.dev.example .env.dev
+# provision shared DB + ArxMail keys (see deployment doc), then:
+.\deploy.ps1 dev up
 ```
 
 ### Backend API

@@ -41,3 +41,6 @@ jobs:
 
       - name: Build admin portal
         run: npm run build:admin
+
+      - name: Accessibility foundation audit
+        run: npm run audit:a11y

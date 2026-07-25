@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, expect, it } from 'vitest';
+import { detectPlatformKind, isNativePlatform } from './platform-detection';
 
-import { SharedPlatform } from './shared-platform';
-
-describe('SharedPlatform', () => {
-  let component: SharedPlatform;
-  let fixture: ComponentFixture<SharedPlatform>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [SharedPlatform],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(SharedPlatform);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+describe('platform detection', () => {
+  it('defaults to browser when Capacitor is absent', () => {
+    expect(detectPlatformKind()).toBe('browser');
+    expect(isNativePlatform()).toBe(false);
   });
 });

@@ -33,7 +33,12 @@ jobs:
       - name: Restore
         run: dotnet restore ScopeSeal.slnx
       - name: NuGet audit
-        run: dotnet list package --vulnerable --include-transitive
+        run: |
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee audit-output.txt
+          if grep -qi "has the following vulnerable" audit-output.txt; then
+            echo "::error::Vulnerable NuGet packages detected"
+            exit 1
+          fi
 
   npm-audit:
     runs-on: ubuntu-latest

@@ -25,6 +25,33 @@ public sealed class ScopeSealOptions
 
     [Required]
     public AiOptions Ai { get; init; } = new();
+
+    [Required]
+    public DocumentUploadOptions DocumentUpload { get; init; } = new();
+
+    [Required]
+    public SecurityOptions Security { get; init; } = new();
+
+    [Required]
+    public NotificationOptions Notifications { get; init; } = new();
+}
+
+public sealed class DocumentUploadOptions
+{
+    [Range(1024, long.MaxValue)]
+    public long MaxFileBytes { get; init; } = 25_000_000;
+
+    [Range(1, 168)]
+    public int SessionExpirationHours { get; init; } = 24;
+
+    [Range(1, 60)]
+    public int DownloadTokenExpirationMinutes { get; init; } = 5;
+
+    [Required]
+    public string QuarantineContainer { get; init; } = "quarantine";
+
+    [Required]
+    public string PermanentContainer { get; init; } = "documents";
 }
 
 public sealed class AuthOptions
@@ -38,6 +65,11 @@ public sealed class AuthOptions
 
     [Required]
     public string JwtAudience { get; init; } = "scopeseal-api";
+
+    [Range(1, 168)]
+    public int CookieExpirationHours { get; init; } = 8;
+
+    public bool RequireEmailVerification { get; init; } = true;
 }
 
 public sealed class StorageOptions
@@ -53,4 +85,41 @@ public sealed class AiOptions
     [Required]
     [RegularExpression("^(ManualOnly|LocalProcessing|ApprovedExternalProvider)$")]
     public string Mode { get; init; } = "ManualOnly";
+
+    public bool KillSwitchEnabled { get; init; }
+
+    [Range(1, 1000)]
+    public int MaxFactsPerRun { get; init; } = 100;
+
+    [Range(1, 100)]
+    public int MaxExtractionJobsPerBatch { get; init; } = 5;
+}
+
+public sealed class NotificationOptions
+{
+    [Required]
+    public EmailNotificationOptions Email { get; init; } = new();
+}
+
+public sealed class EmailNotificationOptions
+{
+    [Required]
+    [RegularExpression("^(Development|ArxMail)$")]
+    public string Provider { get; init; } = "Development";
+
+    [Required]
+    [EmailAddress]
+    public string FromAddress { get; init; } = "noreply@scopeseal.app";
+
+    [Required]
+    public ArxMailOptions ArxMail { get; init; } = new();
+}
+
+public sealed class ArxMailOptions
+{
+    [Required]
+    [Url]
+    public string SubmitUrl { get; init; } = "https://mail.architonixlabs.com/v1/submit";
+
+    public string SecretKey { get; init; } = string.Empty;
 }

@@ -1,7 +1,9 @@
+# Local Windows isolated dev infrastructure (PostgreSQL + Azurite).
+# See docker-compose.local.yml at repo root — kept here for discoverability.
 services:
   postgres:
+    profiles: ["local"]
     image: postgres:16-alpine
-    container_name: scopeseal-postgres
     environment:
       POSTGRES_DB: scopeseal
       POSTGRES_USER: scopeseal
@@ -17,13 +19,16 @@ services:
       retries: 10
 
   azurite:
+    profiles: ["local"]
     image: mcr.microsoft.com/azure-storage/azurite:3.34.0
-    container_name: scopeseal-azurite
-    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data
     ports:
       - "10000:10000"
       - "10001:10001"
       - "10002:10002"
+    volumes:
+      - scopeseal_azurite:/data
 
 volumes:
   scopeseal_pgdata:
+  scopeseal_azurite:

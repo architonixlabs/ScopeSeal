@@ -1,21 +1,21 @@
 using FluentAssertions;
 using NetArchTest.Rules;
-using ScopeSeal.Administration;
+using ScopeSeal.Administration.DependencyInjection;
 using Xunit;
-using ScopeSeal.AgreementSnapshots;
-using ScopeSeal.Approvals;
-using ScopeSeal.Audit;
-using ScopeSeal.Billing;
-using ScopeSeal.ChangeLedger;
-using ScopeSeal.Documents;
-using ScopeSeal.Entitlements;
-using ScopeSeal.Extraction;
+using ScopeSeal.AgreementSnapshots.DependencyInjection;
+using ScopeSeal.Approvals.DependencyInjection;
+using ScopeSeal.Audit.DependencyInjection;
+using ScopeSeal.Billing.DependencyInjection;
+using ScopeSeal.ChangeLedger.DependencyInjection;
+using ScopeSeal.Documents.DependencyInjection;
+using ScopeSeal.Entitlements.DependencyInjection;
+using ScopeSeal.Extraction.DependencyInjection;
 using ScopeSeal.Identity.DependencyInjection;
 using ScopeSeal.Notifications;
-using ScopeSeal.Privacy;
+using ScopeSeal.Privacy.DependencyInjection;
 using ScopeSeal.Shared.Abstractions;
 using ScopeSeal.Tenancy;
-using ScopeSeal.Workspaces;
+using ScopeSeal.Workspaces.DependencyInjection;
 
 namespace ScopeSeal.Architecture.Tests;
 

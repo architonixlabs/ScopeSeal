@@ -52,5 +52,5 @@ Never clone production DB into development without sanitisation.
 
 ## Backups
 
-- RPO/RTO TBD Loop 13
-- Restore test required before production readiness
+- RPO/RTO hypotheses documented in [backup-restore-test.md](./backup-restore-test.md)
+- Restore test required before production preparation (Loop 13 procedure)

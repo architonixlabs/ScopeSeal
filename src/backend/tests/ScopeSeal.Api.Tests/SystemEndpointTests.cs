@@ -4,17 +4,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace ScopeSeal.Api.Tests;
 
-public sealed class SystemEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+[Collection("PostgresIntegration")]
+public sealed class SystemEndpointTests(PostgresWebApplicationFactory factory) : IClassFixture<PostgresWebApplicationFactory>
 {
-    private readonly HttpClient _client;
-
-    public SystemEndpointTests(WebApplicationFactory<Program> factory)
-    {
-        _client = factory.WithWebHostBuilder(builder =>
-        {
-            builder.UseSetting("ScopeSeal:Auth:JwtSecret", "test-secret-minimum-32-characters-long");
-        }).CreateClient();
-    }
+    private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
     public async Task GetSystemStatus_ReturnsOk()

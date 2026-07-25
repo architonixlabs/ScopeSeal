@@ -1,0 +1,14 @@
+# Prod overlay — merged on top of docker-compose.yml for the scopeseal-prod stack.
+# Shifts host ports from the dev 811x block to the prod 911x mirror (+1000).
+#
+# `ports:` lists MERGE (append) across compose files, so use !override to fully replace.
+services:
+  api:
+    ports: !override
+      - "9111:5000"
+
+  nginx:
+    ports: !override
+      - "9110:80"
+      - "9112:81"
+      - "9113:82"

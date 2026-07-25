@@ -45,9 +45,10 @@
 
 ## Testing
 
-- [ ] Unit tests for auth rules and state machines
-- [ ] Integration tests for tenant isolation
-- [ ] Security tests per test strategy (IDOR, XSS fixtures)
+- [x] Unit tests for auth rules and state machines
+- [x] Integration tests for tenant isolation
+- [x] Security tests per test strategy (IDOR, XSS fixtures, webhook replay) — Loop 13
+- [ ] Full penetration test checklist sign-off — Loop 14
 
 ## Release
 

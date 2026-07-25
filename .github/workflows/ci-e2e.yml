@@ -1,0 +1,114 @@
+name: CI E2E
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main, 'feature/**']
+  workflow_dispatch:
+
+concurrency:
+  group: ci-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/clients
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: scopeseal
+          POSTGRES_USER: scopeseal
+          POSTGRES_PASSWORD: scopeseal_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U scopeseal -d scopeseal"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: src/clients/package-lock.json
+
+      - name: Restore and publish API
+        working-directory: src/backend
+        run: |
+          dotnet restore ScopeSeal.slnx
+          dotnet publish hosts/ScopeSeal.Api/ScopeSeal.Api.csproj -c Release -o ../../.e2e-api
+
+      - name: Wait for PostgreSQL
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          for i in $(seq 1 30); do
+            PGPASSWORD=scopeseal_ci psql -h localhost -U scopeseal -d scopeseal -c 'SELECT 1' && exit 0
+            sleep 2
+          done
+          exit 1
+
+      - name: Install client dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Build marketing site
+        run: npm run build:marketing
+
+      - name: Start API
+        run: |
+          ASPNETCORE_ENVIRONMENT=Testing \
+          ConnectionStrings__Default="Host=localhost;Port=5432;Database=scopeseal;Username=scopeseal;Password=scopeseal_ci" \
+          ScopeSeal__Auth__JwtSecret="ci-test-secret-minimum-32-characters-long" \
+          ScopeSeal__Auth__RequireEmailVerification="false" \
+          ASPNETCORE_URLS="http://localhost:5080" \
+          dotnet ../../.e2e-api/ScopeSeal.Api.dll &
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:5080/health/ready && exit 0
+            sleep 2
+          done
+          echo "API failed to become ready"
+          exit 1
+
+      - name: Start marketing static server
+        run: |
+          npx --yes serve -s dist/marketing-site/browser -l 4000 &
+          for i in $(seq 1 20); do curl -sf http://localhost:4000/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+        env:
+          PORT: 4000
+
+      - name: Run Playwright smoke tests
+        env:
+          CI: true
+          SCOPESEAL_API_URL: http://localhost:5080
+          SCOPESEAL_MARKETING_URL: http://localhost:4000
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: src/clients/playwright-report
+          retention-days: 7
